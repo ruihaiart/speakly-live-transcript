@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Live Transcript — 交互流程</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Arial, -apple-system, sans-serif;
+  background: #1c1c1e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px 60px;
+  gap: 24px;
+}
+
+/* ── Top nav ── */
+.flow-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1100px;
+  width: 100%;
+}
+.flow-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #3a3a3c;
+  color: #8e8e93;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.step-label {
+  font-size: 12px;
+  color: #636366;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.flow-step:hover .step-num { background: #3372fc; color: white; }
+.flow-step:hover .step-label { color: #aeaeb2; }
+.flow-step.active .step-num { background: #3372fc; color: white; }
+.flow-step.active .step-label { color: #e5e5ea; font-weight: 500; }
+.arrow {
+  color: #3a3a3c;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ── Frame container ── */
+.frame-wrap {
+  position: relative;
+  width: 1014px;
+}
+.frame-label {
+  font-size: 11px;
+  color: #48484a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+iframe {
+  width: 1014px;
+  height: 750px;
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.6);
+  display: block;
+}
+
+/* ── Bottom controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.btn {
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-prev {
+  background: #3a3a3c;
+  color: #e5e5ea;
+}
+.btn-prev:hover { background: #48484a; }
+.btn-next {
+  background: #3372fc;
+  color: white;
+}
+.btn-next:hover { background: #2563eb; }
+.btn:disabled { opacity: 0.3; cursor: default; }
+.counter {
+  font-size: 13px;
+  color: #636366;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* ── Flow description ── */
+.flow-desc {
+  background: #2c2c2e;
+  border-radius: 12px;
+  padding: 14px 20px;
+  max-width: 1014px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.flow-desc-icon {
+  width: 32px; height: 32px;
+  background: #3372fc22;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.flow-desc-text { font-size: 13px; color: #aeaeb2; line-height: 1.5; }
+.flow-desc-text strong { color: #e5e5ea; }
+</style>
+</head>
+<body>
+
+<!-- Flow navigation -->
+<div class="flow-nav" id="flowNav"></div>
+
+<!-- Frame label -->
+<div class="frame-wrap">
+  <div class="frame-label" id="frameLabel"></div>
+  <iframe id="preview" src="01-entry.html"></iframe>
+</div>
+
+<!-- Description -->
+<div class="flow-desc">
+  <div class="flow-desc-icon">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#3372fc" stroke-width="1.3"/><path d="M8 5v4M8 11v.5" stroke="#3372fc" stroke-width="1.3" stroke-linecap="round"/></svg>
+  </div>
+  <div class="flow-desc-text" id="flowDesc"></div>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" onclick="go(-1)">← 上一步</button>
+  <div class="counter" id="counter"></div>
+  <button class="btn btn-next" id="nextBtn" onclick="go(1)">下一步 →</button>
+</div>
+
+<script>
+const screens = [
+  {
+    file: '01-entry.html',
+    label: '01 · Live Transcript 入口页',
+    short: '入口',
+    desc: '<strong>入口页</strong> — 左侧导航新增 Live Transcript 菜单项（高亮蓝色）。主内容区展示两种模式卡片：<strong>实时同传（会议/面对面）</strong>和<strong>视频同传（网课/直播）</strong>，以及最近记录区域（空状态）。'
+  },
+  {
+    file: '02-settings-modal.html',
+    label: '02 · 实时同传 — 设置弹窗',
+    short: '设置弹窗',
+    desc: '<strong>点击「实时同传」卡片后</strong> — 弹出设置 Modal，显示当前语言对（英语→中文），可配置翻译引擎、声音来源、目标语言，支持「记住设置」，点击「开始同传」进入录制。'
+  },
+  {
+    file: '03-working-empty.html',
+    label: '03 · 实时同传 — 工作页（刚开始）',
+    short: '录制中（空）',
+    desc: '<strong>开始录制后</strong> — 顶部显示语言对、延迟徽章（45ms）、麦克风来源。内容区显示「正在监听...」等待状态，底部工具栏：悬浮字幕 / 保存 / 麦克风按钮（蓝色，计时）/ 同传设置 / AI 总结。'
+  },
+  {
+    file: '04-working-content.html',
+    label: '04 · 实时同传 — 工作页（有内容）',
+    short: '转录中',
+    desc: '<strong>识别到语音后</strong> — 内容区按时间戳展示段落：深色原文 + 蓝色译文。当前正在翻译的段落末尾有光标闪烁效果，波形图显示活跃的音频输入。'
+  },
+  {
+    file: '05-ai-summary.html',
+    label: '05 · AI 智能总结 Modal',
+    short: 'AI 总结',
+    desc: '<strong>点击「AI 总结」</strong> — 弹出 AI 智能总结 Modal，显示结构化内容（标题、中心思想、核心摘要、要点列表），底部有「复制」和「生成中...」按钮，AI 思考中状态。'
+  },
+  {
+    file: '06-sync-settings.html',
+    label: '06 · 同传设置底部面板',
+    short: '同传设置',
+    desc: '<strong>点击「同传设置」</strong> — 从底部滑出设置面板，分「字体设置」（字体大小、显示原文开关）和「AI 同传设置」（精修模式、语音灵敏度、翻译引擎）两个分区。'
+  },
+  {
+    file: '07-video-working.html',
+    label: '07 · 视频同传 — 工作页（有内容）',
+    short: '视频同传',
+    desc: '<strong>视频同传模式</strong> — 顶部音频来源徽章变为橙黄色「系统音频」（区别于麦克风），录制按钮变为橙色渐变，波形颜色也同步变化。内容区展示日语→中文的实时转录示例。'
+  },
+  {
+    file: '08-floating-subtitle.html',
+    label: '08 · 悬浮字幕窗口',
+    short: '悬浮字幕',
+    desc: '<strong>点击「悬浮字幕」</strong> — 弹出独立的置顶悬浮小窗，深色背景，白色原文 + 黄色译文，顶部工具栏支持 A+/A- 字号、颜色切换（白/黄/绿/蓝）、原文显示开关。'
+  },
+  {
+    file: '09-permission-error.html',
+    label: '09 · 权限错误状态',
+    short: '权限错误',
+    desc: '<strong>未授权麦克风时</strong> — 顶部出现红色警告 Banner「可能无法正常工作，您需要开启系统录音权限」+「立即设置」按钮；内容区显示麦克风禁用图标和引导文字，底部工具栏呈灰色禁用状态。'
+  }
+];
+
+let current = 0;
+
+function render() {
+  const s = screens[current];
+  document.getElementById('preview').src = s.file;
+  document.getElementById('frameLabel').textContent = s.label;
+  document.getElementById('flowDesc').innerHTML = s.desc;
+  document.getElementById('counter').textContent = `${current + 1} / ${screens.length}`;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === screens.length - 1;
+  document.getElementById('nextBtn').textContent = current === screens.length - 1 ? '完成 ✓' : '下一步 →';
+
+  // Update nav
+  const nav = document.getElementById('flowNav');
+  nav.innerHTML = screens.map((sc, i) => {
+    const isLast = i === screens.length - 1;
+    return `
+      <a class="flow-step ${i === current ? 'active' : ''}" href="#" onclick="jumpTo(${i});return false;">
+        <div class="step-num">${i + 1}</div>
+        <div class="step-label">${sc.short}</div>
+      </a>
+      ${!isLast ? '<span class="arrow">›</span>' : ''}
+    `;
+  }).join('');
+}
+
+function go(dir) {
+  current = Math.max(0, Math.min(screens.length - 1, current + dir));
+  render();
+}
+
+function jumpTo(i) {
+  current = i;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

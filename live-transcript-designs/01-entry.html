@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><link rel="stylesheet" href="shared.css"><script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script></head>
+<body>
+<div class="app-window">
+  <div class="window-controls">
+    <div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div>
+  </div>
+  <div class="workspace">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <div class="logo-area">
+          <div class="logo-icon">
+            <div class="logo-bars">
+              <div class="bar" style="height:5px"></div>
+              <div class="bar" style="height:9px"></div>
+              <div class="bar" style="height:7px"></div>
+              <div class="bar" style="height:13px"></div>
+              <div class="bar" style="height:6px"></div>
+            </div>
+          </div>
+          <span class="logo-name">Speakly</span>
+          <span class="plus-badge">Plus</span>
+        </div>
+        <div class="nav-section">
+          <div class="nav-menu">
+            <div class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 7.5L9 2l7 5.5V16H12v-5H6v5H2V7.5z" stroke="#6b7280" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Home
+            </div>
+            <div class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#6b7280" stroke-width="1.5"/><path d="M6 7h6M6 10.5h4" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Dictionary
+            </div>
+            <div class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2.5" stroke="#6b7280" stroke-width="1.5"/><path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.7 3.7l1.4 1.4M12.9 12.9l1.4 1.4M3.7 14.3l1.4-1.4M12.9 5.1l1.4-1.4" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Custom Instructions
+            </div>
+            <div class="nav-item active-blue" style="background:#ecf3ff">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="6" y="2" width="6" height="9" rx="3" stroke="#3372fc" stroke-width="1.5"/><path d="M3 10c0 3.314 1.343 6 6 6s6-2.686 6-6" stroke="#3372fc" stroke-width="1.5" stroke-linecap="round"/><path d="M9 16v-1" stroke="#3372fc" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span style="color:#3372fc;font-weight:600">Live Transcript</span>
+            </div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" style="background:#ebebeb">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="10" rx="2" stroke="#232425" stroke-width="1.5"/><path d="M6 15h6M9 13v2" stroke="#232425" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Meeting Notes
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="#9ca3af" stroke-width="1.5"/><path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#9ca3af" stroke-width="1.5"/><circle cx="10" cy="10" r="2" fill="#9ca3af"/><path d="M10 4v2M10 14v2M4 10h2M14 10h2" stroke="#9ca3af" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel">
+      <div class="panel-body">
+        <div style="margin-bottom:6px;font-size:22px;font-weight:700;color:#1c1d1f">Live Transcript</div>
+        <div style="margin-bottom:28px;font-size:13px;color:#9ca3af">实时转录对话，跨语言实时同传</div>
+
+        <div class="mode-cards">
+          <div class="mode-card mode-card-realtime">
+            <div class="mode-card-icon">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="7" y="2" width="8" height="12" rx="4" fill="white" opacity="0.9"/><path d="M3 12c0 4.418 1.79 8 8 8s8-3.582 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M11 20v-1" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div class="mode-card-title">实时同传</div>
+            <div class="mode-card-sub">会议 / 面对面</div>
+          </div>
+          <div class="mode-card mode-card-video">
+            <div class="mode-card-icon">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="13" height="10" rx="2.5" fill="white" opacity="0.9"/><path d="M15 9l5-3v10l-5-3V9z" fill="white" opacity="0.9"/></svg>
+            </div>
+            <div class="mode-card-title">视频同传</div>
+            <div class="mode-card-sub">网课 / 直播 / 视频</div>
+          </div>
+        </div>
+
+        <div class="section-title">最近记录</div>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#d1d5db" stroke-width="1.5"/><path d="M9 13c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round"/><path d="M13 17v1" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="empty-title">暂无记录</div>
+          <div class="empty-hint">点击上方按钮开始同传</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>
