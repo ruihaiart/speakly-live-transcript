@@ -46,16 +46,46 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
    SCREEN: MEETING NOTES LIST
 ════════════════════════════════════════ */
 .list-header{padding:24px 28px 0;flex-shrink:0}
-.list-title-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.list-title-row{margin-bottom:4px}
 .list-title{font-size:24px;font-weight:700;color:#232425}
 .list-subtitle{font-size:13px;color:#909499;margin-bottom:18px}
-.list-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;padding-top:4px}
-.list-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid #E2E2E2;background:white;color:#232425;transition:background .15s,border-color .15s;white-space:nowrap}
-.list-btn:hover{background:#FAFAFA;border-color:#D1D1D1}
-.list-btn-primary{background:#232425;color:white;border-color:#232425}
-.list-btn-primary:hover{background:#393A3B;border-color:#393A3B}
-.list-btn-blue{border-color:#0F7FFF;color:#0F7FFF}
-.list-btn-blue:hover{background:#F3F9FF}
+
+/* ── Action Cards ── */
+.action-cards{display:flex;gap:12px;margin-bottom:18px}
+.ac{flex:1;border-radius:16px;padding:31px 18px;cursor:pointer;display:flex;flex-direction:row;align-items:center;gap:14px;position:relative;overflow:hidden;transition:transform .16s cubic-bezier(.34,1.4,.64,1),box-shadow .16s;user-select:none}
+.ac:hover{transform:translateY(-2px)}
+.ac:active{transform:translateY(0) scale(.98);transition-duration:.08s}
+.ac-text{flex:1;min-width:0}
+/* New Note — soft green */
+.ac-new{background:#F0FDF6;border:1.5px solid #C4EDD8;box-shadow:0 2px 8px rgba(22,163,74,.05)}
+.ac-new:hover{background:#E6FAF0;box-shadow:0 4px 14px rgba(22,163,74,.11)}
+/* Live Transcript — soft blue */
+.ac-lt{background:#EEF4FF;border:1.5px solid #D4E5FF;box-shadow:0 2px 8px rgba(15,127,255,.06)}
+.ac-lt:hover{background:#E5EFFE;box-shadow:0 4px 14px rgba(15,127,255,.12)}
+/* Import — soft amber */
+.ac-import{background:#FFF6EE;border:1.5px solid #FFE5CC;box-shadow:0 2px 8px rgba(240,120,30,.05)}
+.ac-import:hover{background:#FFF0E2;box-shadow:0 4px 14px rgba(240,120,30,.1)}
+/* icon wrapper */
+.ac-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ac-new .ac-icon{background:rgba(22,163,74,.12);border:none}
+.ac-lt .ac-icon{background:rgba(15,127,255,.12);border:none}
+.ac-import .ac-icon{background:rgba(224,112,32,.12);border:none}
+/* text */
+.ac-label{font-size:15px;font-weight:700;letter-spacing:-.2px;margin-bottom:3px}
+.ac-new .ac-label{color:#065f3a}
+.ac-lt .ac-label{color:#0052cc}
+.ac-import .ac-label{color:#b84a00}
+.ac-desc{font-size:12px;line-height:1.4}
+.ac-new .ac-desc{color:#4a9e72}
+.ac-lt .ac-desc{color:#5b8fd4}
+.ac-import .ac-desc{color:#c47a40}
+/* chevron */
+.ac-arrow{flex-shrink:0;opacity:.35;transition:opacity .15s,transform .15s}
+.ac:hover .ac-arrow{opacity:.65;transform:translateX(2px)}
+.ac-new .ac-arrow{color:#16a34a}
+.ac-lt .ac-arrow{color:#0F7FFF}
+.ac-import .ac-arrow{color:#e07020}
+
 .search-wrap{padding:0 28px;margin-bottom:4px;flex-shrink:0}
 .search-box{display:flex;align-items:center;gap:10px;padding:9px 14px;background:#FAFAFA;border:1px solid #EFEFEF;border-radius:10px;cursor:text}
 .search-box input{border:none;background:none;outline:none;font-size:13px;color:#606366;flex:1;font-family:inherit}
@@ -203,25 +233,35 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 /* ════════════════════════════════════════
    OVERLAYS
 ════════════════════════════════════════ */
-.overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:20px;display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay{position:absolute;inset:0;background:rgba(10,10,18,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:20px;display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .22s}
 .overlay.show{opacity:1;pointer-events:all}
-.modal{background:white;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.18);transform:translateY(20px) scale(.97);transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0}
+.modal{background:white;border-radius:20px;box-shadow:0 8px 16px rgba(0,0,0,.06),0 24px 48px rgba(0,0,0,.15),0 0 0 1px rgba(0,0,0,.04);transform:translateY(16px) scale(.96);transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .22s;opacity:0}
 .overlay.show .modal{transform:none;opacity:1}
 
 /* Mode select modal */
-.mode-modal{width:440px;padding:24px}
-.mode-modal-title{font-size:17px;font-weight:700;color:#232425;text-align:center;margin-bottom:6px}
-.mode-modal-sub{font-size:13px;color:#909499;text-align:center;margin-bottom:20px}
-.mode-cards-row{display:flex;gap:12px;margin-bottom:16px}
-.mode-card{flex:1;height:118px;border-radius:14px;padding:16px;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;user-select:none}
-.mode-card:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(0,0,0,.15)}
-.mc-realtime{background:linear-gradient(140deg,#5CB8FF 0%,#0F7FFF 60%,#0D65CC 100%)}
-.mc-video{background:linear-gradient(140deg,#fbbf24 0%,#f97316 60%,#ea580c 100%)}
-.mc-icon{position:absolute;top:14px;left:14px;width:36px;height:36px;background:rgba(255,255,255,.22);border-radius:10px;display:flex;align-items:center;justify-content:center}
-.mc-title{font-size:16px;font-weight:700;color:white;margin-bottom:3px}
-.mc-sub{font-size:11px;color:rgba(255,255,255,.78)}
-.mode-cancel{text-align:center;padding:8px;font-size:14px;color:#909499;cursor:pointer;border-radius:8px;transition:background .12s}
-.mode-cancel:hover{background:#F5F5F5;color:#606366}
+.mode-modal{width:460px;padding:28px 28px 24px}
+.mode-modal-header{text-align:center;margin-bottom:22px}
+.mode-modal-title{font-size:18px;font-weight:700;color:#111827;margin-bottom:5px;letter-spacing:-.3px}
+.mode-modal-sub{font-size:13px;color:#9ca3af;line-height:1.5}
+.mode-cards-row{display:flex;gap:14px;margin-bottom:20px}
+.mode-card{flex:1;height:144px;border-radius:18px;padding:18px;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s;user-select:none}
+.mode-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.1)}
+.mode-card:active{transform:translateY(0) scale(.99);transition-duration:.08s}
+.mc-realtime{background:#EEF4FF;border:1.5px solid #D4E5FF;box-shadow:0 2px 8px rgba(15,127,255,.06)}
+.mc-realtime:hover{background:#E5EFFE;box-shadow:0 12px 28px rgba(15,127,255,.12)}
+.mc-video{background:#FFF6EE;border:1.5px solid #FFE5CC;box-shadow:0 2px 8px rgba(240,120,30,.05)}
+.mc-video:hover{background:#FFF0E2;box-shadow:0 12px 28px rgba(240,120,30,.1)}
+.mc-icon{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.mc-realtime .mc-icon{background:rgba(15,127,255,.12)}
+.mc-video .mc-icon{background:rgba(224,112,32,.12)}
+.mc-title{font-size:17px;font-weight:700;margin-bottom:4px;letter-spacing:-.2px}
+.mc-realtime .mc-title{color:#0052cc}
+.mc-video .mc-title{color:#b84a00}
+.mc-sub{font-size:12px;letter-spacing:.01em}
+.mc-realtime .mc-sub{color:#5b8fd4}
+.mc-video .mc-sub{color:#c47a40}
+.mode-cancel{text-align:center;padding:10px 12px;font-size:14px;color:#9ca3af;cursor:pointer;border-radius:10px;transition:background .12s,color .12s;font-weight:500;margin:-4px -4px 0}
+.mode-cancel:hover{background:#f4f4f6;color:#606366}
 
 /* Settings modal */
 .settings-modal{width:460px}
@@ -370,23 +410,54 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
         <div class="screen" id="screenList">
           <div class="list-header">
             <div class="list-title-row">
-              <div>
-                <div class="list-title">Meeting Notes</div>
-                <div class="list-subtitle">Record, transcribe and summarize your meetings</div>
+              <div class="list-title">Meeting Notes</div>
+              <div class="list-subtitle">Record, transcribe and summarize your meetings</div>
+            </div>
+            <div class="action-cards">
+              <!-- New Note -->
+              <div class="ac ac-new">
+                <div class="ac-icon">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M13 3L15.5 5.5 6 15H3.5v-2.5L13 3Z" stroke="#16a34a" stroke-width="1.3" stroke-linejoin="round"/>
+                    <path d="M11 5l2.5 2.5" stroke="#16a34a" stroke-width="1.1" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="ac-text">
+                  <div class="ac-label">New Note</div>
+                  <div class="ac-desc">手动创建会议笔记</div>
+                </div>
+                <svg class="ac-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
-              <div class="list-actions">
-                <button class="list-btn">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="2" stroke="#232425" stroke-width="1.3"/><path d="M7 5v4M5 7h4" stroke="#232425" stroke-width="1.3" stroke-linecap="round"/></svg>
-                  Import
-                </button>
-                <button class="list-btn" onclick="openModeSelect()">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4.5" y="1.5" width="5" height="7" rx="2.5" stroke="#606366" stroke-width="1.2"/><path d="M2 8c0 2.761 2.239 4.5 5 4.5s5-1.739 5-4.5" stroke="#606366" stroke-width="1.2" stroke-linecap="round"/></svg>
-                  Live Transcript
-                </button>
-                <button class="list-btn list-btn-primary">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  New Note
-                </button>
+              <!-- Live Transcript -->
+              <div class="ac ac-lt" onclick="openModeSelect()">
+                <div class="ac-icon">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <rect x="7.5" y="1.5" width="3" height="8.5" rx="1.5" stroke="#0F7FFF" stroke-width="1.4"/>
+                    <path d="M6 10a3 3 0 0 1 6 0" stroke="#0F7FFF" stroke-width="1.4" stroke-linecap="round"/>
+                    <path d="M9 13v2" stroke="#0F7FFF" stroke-width="1.4" stroke-linecap="round"/>
+                    <path d="M7 15h4" stroke="#0F7FFF" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="ac-text">
+                  <div class="ac-label">Live Transcript</div>
+                  <div class="ac-desc">实时录音 · AI 转写</div>
+                </div>
+                <svg class="ac-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <!-- Import -->
+              <div class="ac ac-import">
+                <div class="ac-icon">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 2v9" stroke="#e07020" stroke-width="1.4" stroke-linecap="round"/>
+                    <path d="M6 8l3 3 3-3" stroke="#e07020" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 13v2.5a.5.5 0 00.5.5h11a.5.5 0 00.5-.5V13" stroke="#e07020" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="ac-text">
+                  <div class="ac-label">Import</div>
+                  <div class="ac-desc">导入音频或文字文件</div>
+                </div>
+                <svg class="ac-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
             </div>
           </div>
@@ -616,19 +687,29 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
         <!-- ════ OVERLAY: Mode Select ════ -->
         <div class="overlay" id="overlayMode">
           <div class="modal mode-modal">
-            <div class="mode-modal-title">开始 Live Transcript</div>
-            <div class="mode-modal-sub">选择同传模式，开始录制</div>
+            <div class="mode-modal-header">
+              <div class="mode-modal-title">开始 Live Transcript</div>
+              <div class="mode-modal-sub">选择同传模式，开始录制</div>
+            </div>
             <div class="mode-cards-row">
               <div class="mode-card mc-realtime" onclick="selectMode('realtime')">
                 <div class="mc-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="6.5" y="2" width="7" height="10" rx="3.5" fill="white" opacity=".9"/><path d="M3 11c0 3.866 3.134 7 7 7s7-3.134 7-7" stroke="white" stroke-width="1.6" stroke-linecap="round"/><path d="M10 18v1.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="8" y="2" width="4" height="9.5" rx="2" stroke="#0F7FFF" stroke-width="1.6"/>
+                    <path d="M5.5 10.5a4.5 4.5 0 0 1 9 0" stroke="#0F7FFF" stroke-width="1.6" stroke-linecap="round"/>
+                    <path d="M10 15v2" stroke="#0F7FFF" stroke-width="1.6" stroke-linecap="round"/>
+                    <path d="M7.5 17h5" stroke="#0F7FFF" stroke-width="1.6" stroke-linecap="round"/>
+                  </svg>
                 </div>
                 <div class="mc-title">实时同传</div>
                 <div class="mc-sub">会议 / 面对面</div>
               </div>
               <div class="mode-card mc-video" onclick="selectMode('video')">
                 <div class="mc-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="12" height="9" rx="2" fill="white" opacity=".9"/><path d="M14 8.5l5-3v9l-5-3V8.5z" fill="white" opacity=".9"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="2" y="5.5" width="12" height="9" rx="2" stroke="#e07020" stroke-width="1.6"/>
+                    <path d="M14 9l5-3v8l-5-3V9z" stroke="#e07020" stroke-width="1.6" stroke-linejoin="round"/>
+                  </svg>
                 </div>
                 <div class="mc-title">视频同传</div>
                 <div class="mc-sub">网课 / 直播 / 视频</div>
