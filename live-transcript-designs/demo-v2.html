@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Speakly — Meeting Notes v2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c8c8c8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}
+
+/* ── App Window ── */
+.app{width:1014px;height:710px;background:#FAFAFA;border:1px solid #E2E2E2;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.18),0 8px 16px rgba(0,0,0,.1);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.titlebar{height:48px;background:#FAFAFA;display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0}
+.tl{width:12px;height:12px;border-radius:50%;cursor:pointer}
+.tl-r{background:#ff5f57;border:1px solid #e1483f}
+.tl-y{background:#febc2e;border:1px solid #e0a028}
+.tl-g{background:#28c840;border:1px solid #14ae2c}
+.workspace{display:flex;flex:1;overflow:hidden}
+
+/* ── Sidebar ── */
+.sidebar{width:230px;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0 8px;flex-shrink:0}
+.sidebar-top{display:flex;flex-direction:column;gap:24px;padding:0 12px}
+.logo{height:33px;display:flex;align-items:center;gap:10px;padding:0 4px}
+.logo-icon{width:30px;height:30px;background:#232425;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-bars{display:flex;gap:2px;align-items:flex-end;height:16px}
+.lb{background:white;width:3px;border-radius:2px}
+.logo-name{font-size:15px;font-weight:700;color:#232425}
+.plus-b{background:#F3F9FF;color:#0F7FFF;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
+.nav-menu{display:flex;flex-direction:column;gap:2px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:14px;color:#606366;cursor:pointer;transition:background .15s}
+.nav-item:hover{background:#F5F5F5}
+.nav-item.active{background:#F5F5F5;color:#232425;font-weight:600}
+.nav-item.active svg path,.nav-item.active svg rect{stroke:#232425}
+.nav-divider{height:1px;background:#EAEAEA;margin:4px 0}
+.sidebar-footer{padding:12px 20px 0;border-top:1px solid #EAEAEA;display:flex;align-items:center;justify-content:space-between}
+
+/* ── Main / Panel ── */
+.main{flex:1;padding:0 12px 12px 8px;display:flex;flex-direction:column}
+.panel{flex:1;background:white;border:1px solid rgba(226,226,226,.8);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 2px 15px -3px rgba(0,0,0,.04)}
+
+/* ── Screens ── */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;will-change:transform;background:white}
+.screen.hidden{transform:translateX(40px);opacity:0;pointer-events:none}
+.screen.out{transform:translateX(-40px);opacity:0;pointer-events:none}
+
+/* ════════════════════════════════════════
+   SCREEN: MEETING NOTES LIST
+════════════════════════════════════════ */
+.list-header{padding:24px 28px 0;flex-shrink:0}
+.list-title-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.list-title{font-size:24px;font-weight:700;color:#232425}
+.list-subtitle{font-size:13px;color:#909499;margin-bottom:18px}
+.list-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;padding-top:4px}
+.list-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid #E2E2E2;background:white;color:#232425;transition:background .15s,border-color .15s;white-space:nowrap}
+.list-btn:hover{background:#FAFAFA;border-color:#D1D1D1}
+.list-btn-primary{background:#232425;color:white;border-color:#232425}
+.list-btn-primary:hover{background:#393A3B;border-color:#393A3B}
+.list-btn-blue{border-color:#0F7FFF;color:#0F7FFF}
+.list-btn-blue:hover{background:#F3F9FF}
+.search-wrap{padding:0 28px;margin-bottom:4px;flex-shrink:0}
+.search-box{display:flex;align-items:center;gap:10px;padding:9px 14px;background:#FAFAFA;border:1px solid #EFEFEF;border-radius:10px;cursor:text}
+.search-box input{border:none;background:none;outline:none;font-size:13px;color:#606366;flex:1;font-family:inherit}
+.search-box input::placeholder{color:#CCCCCC}
+.list-body{flex:1;overflow-y:auto;padding:16px 28px 20px}
+.list-section-label{font-size:12px;font-weight:600;color:#909499;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;margin-top:4px}
+.coming-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #EFEFEF;cursor:pointer;transition:background .1s}
+.coming-item:last-child{border-bottom:none}
+.coming-icon{width:36px;height:36px;border-radius:8px;background:#f0fdf4;border:1.5px solid #bbf7d0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.coming-info{flex:1}
+.coming-title{font-size:14px;font-weight:500;color:#232425;margin-bottom:2px}
+.coming-time{font-size:12px;color:#909499}
+.coming-chevron{color:#CCCCCC}
+.notes-section{margin-top:20px}
+.note-row{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid #EFEFEF;cursor:pointer;transition:background .1s}
+.note-row:last-child{border-bottom:none}
+.note-row:hover .note-title{color:#0F7FFF}
+.note-icon{width:34px;height:34px;border-radius:8px;background:#F3F9FF;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.note-icon.transcript-icon{background:#F3F9FF}
+.note-icon.manual-icon{background:#FAFAFA;border:1.5px solid #EFEFEF}
+.note-info{flex:1;min-width:0}
+.note-title{font-size:14px;font-weight:500;color:#232425;margin-bottom:2px;transition:color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-meta{font-size:12px;color:#909499;display:flex;align-items:center;gap:8px}
+.note-badge{background:#F3F9FF;color:#0F7FFF;font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px}
+.note-more{color:#CCCCCC;cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .1s;flex-shrink:0;font-size:16px}
+.note-more:hover{background:#F5F5F5;color:#606366}
+.empty-notes{display:flex;flex-direction:column;align-items:center;padding:32px 0;gap:8px;color:#909499}
+.empty-notes-icon{width:48px;height:48px;background:#F5F5F5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+
+/* ════════════════════════════════════════
+   SCREEN: RECORDING / WORKING
+════════════════════════════════════════ */
+.working-header{height:52px;background:white;border-bottom:1px solid #EFEFEF;display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0}
+.back-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#606366;transition:background .15s;flex-shrink:0}
+.back-btn:hover{background:#F5F5F5}
+.wh-context{font-size:12px;color:#909499;font-weight:400}
+.wh-sep{color:#CCCCCC;font-size:12px}
+.wh-current{font-size:14px;font-weight:600;color:#232425}
+.latency{display:flex;align-items:center;gap:4px;background:#ecfdf5;color:#059669;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;margin-left:auto}
+.lat-dot{width:6px;height:6px;background:#10b981;border-radius:50%}
+.audio-src{display:flex;align-items:center;gap:6px;font-size:12px;color:#606366;padding:5px 10px;border:1px solid #E2E2E2;border-radius:20px;cursor:pointer;transition:background .15s;margin-left:8px}
+.audio-src:hover{background:#FAFAFA}
+.audio-src-video{border-color:#fde68a;color:#d97706;background:#fffbeb}
+.transcript-area{flex:1;padding:22px 24px;overflow-y:auto;background:#FAFAFA}
+.t-block{margin-bottom:22px;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.t-time{display:flex;align-items:center;gap:6px;font-size:11px;color:#909499;margin-bottom:5px}
+.t-badge{background:#f0fdf4;color:#16a34a;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600}
+.t-orig{font-size:14px;color:#232425;line-height:1.65;margin-bottom:3px}
+.t-trans{font-size:14px;color:#0F7FFF;line-height:1.65}
+.t-trans.current{display:flex;align-items:flex-start;gap:6px}
+.cursor{display:inline-block;width:2px;height:18px;background:#0F7FFF;border-radius:1px;flex-shrink:0;margin-top:3px;animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.listening-state{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.pulse-wrap{position:relative;width:72px;height:72px;display:flex;align-items:center;justify-content:center}
+.pulse-ring1{position:absolute;width:72px;height:72px;border-radius:50%;border:2px solid #CCE6FF;animation:pring 2s ease-in-out infinite}
+.pulse-ring2{position:absolute;width:52px;height:52px;border-radius:50%;border:2px solid #99CCFF;animation:pring 2s ease-in-out .3s infinite}
+.pulse-core{width:36px;height:36px;border-radius:50%;background:#0F7FFF;display:flex;align-items:center;justify-content:center}
+@keyframes pring{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:.6;transform:scale(1.06)}}
+.listen-title{font-size:15px;font-weight:500;color:#606366}
+.listen-sub{font-size:13px;color:#909499}
+.waveform{height:28px;display:flex;align-items:center;justify-content:center;gap:3px;padding:0 20px;flex-shrink:0;background:#FAFAFA}
+.wd{border-radius:50%;transition:height .15s}
+.wd-blue{background:#BDD6FF}
+.wd-orange{background:#fed7aa}
+.toolbar{height:78px;background:white;border-top:1px solid #EFEFEF;display:flex;align-items:center;justify-content:space-around;padding:0 20px;flex-shrink:0}
+.tb-btn{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;color:#606366;cursor:pointer;padding:6px 10px;border-radius:10px;transition:background .15s;user-select:none}
+.tb-btn:hover{background:#F5F5F5}
+.tb-btn.active-btn{color:#0F7FFF}
+.tb-btn.active-btn svg path,.tb-btn.active-btn svg rect{stroke:#0F7FFF}
+.mic-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.mic-btn{width:52px;height:52px;border-radius:50%;background:#0F7FFF;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(15,127,255,.45);cursor:pointer;transition:transform .15s,box-shadow .15s;user-select:none}
+.mic-btn:hover{transform:scale(1.06);box-shadow:0 6px 18px rgba(15,127,255,.5)}
+.mic-btn.paused{background:#E2E2E2;box-shadow:none}
+.mic-btn.video-mode{background:linear-gradient(135deg,#fb923c,#ea580c);box-shadow:0 4px 14px rgba(234,88,12,.45)}
+.mic-timer{font-size:11px;color:#606366;text-align:center}
+.ai-label{color:#f97316}
+.ai-label svg path{stroke:#f97316}
+.perm-banner{background:#fef2f2;border:1px solid #FFC4C4;border-radius:10px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;margin:12px 14px 0;flex-shrink:0}
+.perm-text{font-size:13px;color:#E53535;display:flex;align-items:center;gap:8px}
+.perm-btn{background:#FF3D3D;color:white;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s}
+.perm-btn:hover{background:#E53535}
+
+/* ════════════════════════════════════════
+   SCREEN: TRANSCRIPT DETAIL (with tabs)
+════════════════════════════════════════ */
+.detail-header{height:52px;display:flex;align-items:center;padding:0 16px;gap:12px;border-bottom:1px solid #EFEFEF;flex-shrink:0}
+.detail-back{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s;flex-shrink:0}
+.detail-back:hover{background:#F5F5F5}
+.detail-name-wrap{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+.detail-name{font-size:16px;font-weight:700;color:#232425;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detail-edit-btn{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s;flex-shrink:0}
+.detail-edit-btn:hover{background:#F5F5F5}
+.detail-meta-bar{padding:12px 20px;border-bottom:1px solid #EFEFEF;display:flex;align-items:center;gap:16px;flex-shrink:0;background:#FAFAFA}
+.detail-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#909499}
+.detail-lang-badge{background:#F3F9FF;color:#0F7FFF;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+/* Tabs */
+.detail-tabs{display:flex;align-items:center;gap:0;padding:0 20px;border-bottom:1px solid #EFEFEF;flex-shrink:0;background:white}
+.detail-tab{padding:12px 16px;font-size:14px;font-weight:500;color:#909499;cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.detail-tab:hover{color:#606366}
+.detail-tab.active{color:#232425;font-weight:600;border-bottom-color:#232425}
+/* Tab panels */
+.tab-panel{display:none;flex:1;overflow-y:auto;flex-direction:column}
+.tab-panel.active{display:flex}
+/* 转录 tab */
+.tp-transcript{padding:20px 24px}
+.tp-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.tp-toggle-group{display:flex;align-items:center;gap:14px}
+.tp-toggle-btn{font-size:13px;color:#CCCCCC;cursor:pointer;display:flex;align-items:center;gap:5px;transition:color .12s}
+.tp-toggle-btn.on{color:#606366}
+.tp-segment{margin-bottom:20px}
+.tp-seg-time{display:inline-flex;align-items:center;gap:6px;background:#F3F9FF;color:#0F7FFF;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer;margin-bottom:8px;transition:background .12s}
+.tp-seg-time:hover{background:#D6ECFF}
+.tp-seg-orig{font-size:14px;color:#232425;line-height:1.65;margin-bottom:6px}
+.tp-seg-trans{font-size:14px;color:#0F7FFF;line-height:1.65;padding-left:12px;border-left:3px solid #D6ECFF}
+/* AI总结 tab */
+.tp-ai{padding:20px 24px;flex:1}
+.tp-ai-content{font-size:14px;line-height:1.75;color:#606366}
+.tp-ai-content p{margin-bottom:12px}
+.tp-ai-content ul{padding-left:18px}
+.tp-ai-content li{margin-bottom:6px}
+/* 笔记 tab */
+.tp-notes{padding:20px 24px;flex:1;display:flex;flex-direction:column;gap:12px}
+.notes-editor{flex:1;border:1px solid #EFEFEF;border-radius:12px;padding:14px 16px;font-size:14px;color:#232425;line-height:1.7;outline:none;resize:none;font-family:inherit;min-height:200px;transition:border-color .15s}
+.notes-editor:focus{border-color:#E2E2E2}
+.notes-editor:empty:before{content:attr(data-placeholder);color:#CCCCCC}
+.notes-save-btn{align-self:flex-end;background:#232425;color:white;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.notes-save-btn:hover{background:#393A3B}
+/* Audio player */
+.detail-player{height:96px;border-top:1px solid #EFEFEF;padding:8px 20px 6px;display:flex;flex-direction:column;justify-content:center;gap:8px;flex-shrink:0;background:white}
+.detail-progress-row{display:flex;align-items:center;gap:10px}
+.detail-prog-track{flex:1;height:3px;background:#E2E2E2;border-radius:2px;cursor:pointer;position:relative}
+.detail-prog-fill{height:100%;background:#0F7FFF;border-radius:2px;width:2%;position:relative}
+.detail-prog-fill::after{content:'';width:11px;height:11px;background:#0F7FFF;border-radius:50%;position:absolute;right:-5px;top:50%;transform:translateY(-50%);box-shadow:0 0 0 3px #D6ECFF}
+.detail-time-label{font-size:12px;color:#909499;white-space:nowrap;min-width:34px}
+.detail-controls-row{display:flex;align-items:center;justify-content:center;gap:24px}
+.detail-speed{font-size:13px;font-weight:700;color:#0F7FFF;cursor:pointer;min-width:36px;text-align:center;border:none;background:none;padding:4px;font-family:inherit}
+.detail-ctrl-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:background .12s}
+.detail-ctrl-btn:hover{background:#F5F5F5}
+.detail-play-btn{width:44px;height:44px;background:#0F7FFF;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(15,127,255,.3);transition:transform .1s,background .12s}
+.detail-play-btn:hover{background:#0E72E5;transform:scale(1.05)}
+.detail-share-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;transition:background .12s}
+.detail-share-btn:hover{background:#F5F5F5}
+
+/* ════════════════════════════════════════
+   OVERLAYS
+════════════════════════════════════════ */
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:20px;display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:white;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.18);transform:translateY(20px) scale(.97);transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0}
+.overlay.show .modal{transform:none;opacity:1}
+
+/* Mode select modal */
+.mode-modal{width:440px;padding:24px}
+.mode-modal-title{font-size:17px;font-weight:700;color:#232425;text-align:center;margin-bottom:6px}
+.mode-modal-sub{font-size:13px;color:#909499;text-align:center;margin-bottom:20px}
+.mode-cards-row{display:flex;gap:12px;margin-bottom:16px}
+.mode-card{flex:1;height:118px;border-radius:14px;padding:16px;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;user-select:none}
+.mode-card:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(0,0,0,.15)}
+.mc-realtime{background:linear-gradient(140deg,#5CB8FF 0%,#0F7FFF 60%,#0D65CC 100%)}
+.mc-video{background:linear-gradient(140deg,#fbbf24 0%,#f97316 60%,#ea580c 100%)}
+.mc-icon{position:absolute;top:14px;left:14px;width:36px;height:36px;background:rgba(255,255,255,.22);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.mc-title{font-size:16px;font-weight:700;color:white;margin-bottom:3px}
+.mc-sub{font-size:11px;color:rgba(255,255,255,.78)}
+.mode-cancel{text-align:center;padding:8px;font-size:14px;color:#909499;cursor:pointer;border-radius:8px;transition:background .12s}
+.mode-cancel:hover{background:#F5F5F5;color:#606366}
+
+/* Settings modal */
+.settings-modal{width:460px}
+.sm-header{padding:22px 28px 16px;text-align:center;border-bottom:1px solid #EFEFEF}
+.sm-langs{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px}
+.sm-lang{font-size:15px;font-weight:600;color:#232425}
+.sm-sub{font-size:12px;color:#909499}
+.sm-row{display:flex;align-items:center;justify-content:space-between;padding:15px 28px;border-bottom:1px solid #F5F5F5;cursor:pointer;transition:background .1s}
+.sm-row:hover{background:#FAFAFA}
+.sm-row-left{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#232425}
+.sm-row-right{display:flex;align-items:center;gap:5px;font-size:13px;color:#909499}
+.sm-footer{padding:16px 28px 22px;display:flex;flex-direction:column;gap:12px;border-top:1px solid #F5F5F5}
+.remember{display:flex;align-items:center;justify-content:center;gap:8px}
+.toggle{width:32px;height:18px;background:#0F7FFF;border-radius:9px;position:relative;cursor:pointer;flex-shrink:0}
+.toggle-dot{position:absolute;right:2px;top:2px;width:14px;height:14px;background:white;border-radius:50%}
+.toggle.off{background:#E2E2E2}.toggle.off .toggle-dot{right:auto;left:2px}
+.remember-label{font-size:13px;color:#606366}
+.start-btn{background:#0F7FFF;color:white;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;width:100%;transition:background .15s}
+.start-btn:hover{background:#0E72E5}
+
+/* AI Summary modal */
+.ai-modal{width:500px;max-height:460px;display:flex;flex-direction:column}
+.ai-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;border-bottom:1px solid #EFEFEF;flex-shrink:0}
+.ai-title-row{display:flex;align-items:center;gap:8px}
+.ai-title{font-size:16px;font-weight:600;color:#232425}
+.close-x{width:28px;height:28px;border-radius:50%;background:#F5F5F5;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:#606366;transition:background .15s}
+.close-x:hover{background:#E2E2E2}
+.ai-body{padding:18px 24px;font-size:14px;line-height:1.75;color:#606366;overflow-y:auto;flex:1}
+.ai-body p{margin-bottom:12px}.ai-body ul{padding-left:18px}.ai-body li{margin-bottom:6px}
+.ai-thinking{display:flex;align-items:center;gap:8px;font-size:13px;color:#909499;padding:0 24px 14px;flex-shrink:0}
+.spinner{width:14px;height:14px;border:2px solid #E2E2E2;border-top-color:#0F7FFF;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-footer{padding:14px 24px;border-top:1px solid #EFEFEF;display:flex;gap:12px;flex-shrink:0}
+.btn-sec{flex:1;background:white;color:#232425;border:1.5px solid #E2E2E2;border-radius:10px;padding:11px;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+.btn-sec:hover{background:#FAFAFA}
+.btn-pri{flex:2;background:#0F7FFF;color:white;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+.btn-pri:hover{background:#0E72E5}
+
+/* Bottom sheet */
+.sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);border-radius:20px;z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-overlay.show{opacity:1;pointer-events:all}
+.bottom-sheet{width:100%;background:white;border-radius:16px 16px 20px 20px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.sheet-overlay.show .bottom-sheet{transform:translateY(0)}
+.sheet-handle{padding:10px;display:flex;justify-content:center}
+.handle-bar{width:36px;height:4px;background:#E2E2E2;border-radius:2px}
+.sheet-section{padding:0 22px 14px}
+.sheet-section-title{font-size:11px;font-weight:600;color:#909499;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.sheet-card{background:#FAFAFA;border-radius:12px;overflow:hidden}
+.sheet-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #F5F5F5;cursor:pointer}
+.sheet-row:last-child{border-bottom:none}
+.sheet-row-left div:first-child{font-size:14px;color:#232425;margin-bottom:1px}
+.sheet-row-left div:last-child{font-size:11px;color:#909499}
+.sheet-row-right{display:flex;align-items:center;gap:6px;font-size:13px;color:#909499}
+.sz-ctrl{display:flex;align-items:center;gap:10px}
+.sz-btn{width:30px;height:30px;border:1.5px solid #E2E2E2;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#606366;cursor:pointer;transition:background .1s}
+.sz-btn:hover{background:#F5F5F5}
+.sz-num{font-size:15px;font-weight:600;color:#232425;min-width:22px;text-align:center}
+.sheet-cancel{padding:14px;text-align:center;font-size:14px;color:#606366;cursor:pointer;border-top:1px solid #EFEFEF;transition:background .1s}
+.sheet-cancel:hover{background:#FAFAFA}
+
+/* Quit confirm */
+.confirm-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:20px;display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.confirm-overlay.show{opacity:1;pointer-events:all}
+.confirm-box{background:white;border-radius:16px;width:380px;box-shadow:0 20px 40px rgba(0,0,0,.2);transform:scale(.95);transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0;overflow:hidden}
+.confirm-overlay.show .confirm-box{transform:none;opacity:1}
+.confirm-title{font-size:17px;font-weight:700;color:#232425;text-align:center;padding:24px 24px 12px}
+.confirm-body{font-size:14px;color:#606366;text-align:center;padding:0 24px 24px;line-height:1.6}
+.confirm-actions{display:flex;border-top:1px solid #EFEFEF}
+.confirm-cancel{flex:1;padding:15px;font-size:15px;color:#606366;background:none;border:none;cursor:pointer;border-right:1px solid #EFEFEF;transition:background .12s}
+.confirm-cancel:hover{background:#FAFAFA}
+.confirm-ok{flex:1;padding:15px;font-size:15px;font-weight:600;color:#FF3D3D;background:none;border:none;cursor:pointer;transition:background .12s}
+.confirm-ok:hover{background:#fff5f5}
+
+/* Floating subtitle */
+.float-subtitle{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);width:600px;background:rgba(18,18,28,.9);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;z-index:9999;display:none;user-select:none}
+.float-subtitle.show{display:block;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.float-ctrl{height:38px;background:rgba(255,255,255,.07);display:flex;align-items:center;padding:0 12px;gap:8px}
+.ftl{width:10px;height:10px;border-radius:50%}
+.ftl-r{background:#ff5f57}.ftl-y{background:#febc2e}.ftl-g{background:#28c840}
+.float-spacer{flex:1}
+.fcb{color:rgba(255,255,255,.45);font-size:12px;font-weight:600;padding:2px 6px;border-radius:4px;cursor:pointer;transition:background .1s}
+.fcb:hover{background:rgba(255,255,255,.1)}
+.fsep{width:1px;height:14px;background:rgba(255,255,255,.15);margin:0 6px}
+.fswatch{display:flex;align-items:center;gap:5px}
+.fsc{width:13px;height:13px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.fsc:hover,.fsc.sel{border-color:rgba(255,255,255,.5)}
+.ftog{display:flex;align-items:center;gap:5px;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer}
+.close-float{color:rgba(255,255,255,.35);font-size:16px;cursor:pointer;padding:2px 6px;line-height:1}
+.close-float:hover{color:rgba(255,255,255,.7)}
+.float-content{padding:14px 18px 18px}
+.float-orig{font-size:17px;color:white;line-height:1.5;margin-bottom:8px}
+.float-trans{font-size:17px;color:#fbbf24;line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- ══════════ APP WINDOW ══════════ -->
+<div class="app">
+  <div class="titlebar">
+    <div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div>
+  </div>
+  <div class="workspace">
+
+    <!-- ── SIDEBAR ── -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <div class="logo">
+          <div class="logo-icon">
+            <div class="logo-bars">
+              <div class="lb" style="height:5px"></div><div class="lb" style="height:9px"></div>
+              <div class="lb" style="height:7px"></div><div class="lb" style="height:13px"></div>
+              <div class="lb" style="height:6px"></div>
+            </div>
+          </div>
+          <span class="logo-name">Speakly</span>
+          <span class="plus-b">Plus</span>
+        </div>
+        <nav class="nav-menu">
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 7.5L9 2l7 5.5V16H12v-5H6v5H2V7.5z" stroke="#606366" stroke-width="1.5" stroke-linejoin="round"/></svg>Home
+          </div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#606366" stroke-width="1.5"/><path d="M6 7h6M6 10.5h4" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/></svg>Dictionary
+          </div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2.5" stroke="#606366" stroke-width="1.5"/><path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/></svg>Custom Instructions
+          </div>
+          <div class="nav-divider"></div>
+          <div class="nav-item active">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="10" rx="2" stroke="#232425" stroke-width="1.5"/><path d="M6 15h6M9 13v2" stroke="#232425" stroke-width="1.5" stroke-linecap="round"/></svg>Meeting Notes
+          </div>
+        </nav>
+      </div>
+      <div class="sidebar-footer">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="#909499" stroke-width="1.5"/><path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#909499" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#909499" stroke-width="1.5"/><circle cx="10" cy="10" r="2" fill="#909499"/><path d="M10 4v2M10 14v2M4 10h2M14 10h2" stroke="#909499" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <!-- ── MAIN PANEL ── -->
+    <div class="main">
+      <div class="panel">
+
+        <!-- ════ SCREEN: LIST ════ -->
+        <div class="screen" id="screenList">
+          <div class="list-header">
+            <div class="list-title-row">
+              <div>
+                <div class="list-title">Meeting Notes</div>
+                <div class="list-subtitle">Record, transcribe and summarize your meetings</div>
+              </div>
+              <div class="list-actions">
+                <button class="list-btn">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="2" stroke="#232425" stroke-width="1.3"/><path d="M7 5v4M5 7h4" stroke="#232425" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  Import
+                </button>
+                <button class="list-btn list-btn-blue" onclick="openModeSelect()">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4.5" y="1.5" width="5" height="7" rx="2.5" stroke="#0F7FFF" stroke-width="1.2"/><path d="M2 8c0 2.761 2.239 4.5 5 4.5s5-1.739 5-4.5" stroke="#0F7FFF" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  Live Transcript
+                </button>
+                <button class="list-btn list-btn-primary">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  New Note
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="search-wrap">
+            <div class="search-box">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#CCCCCC" stroke-width="1.3"/><path d="M10 10l2.5 2.5" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <input type="text" placeholder="Search Notes..." readonly>
+            </div>
+          </div>
+          <div class="list-body">
+            <!-- Coming up -->
+            <div class="list-section-label">Coming up</div>
+            <div style="background:#FAFAFA;border:1px solid #EFEFEF;border-radius:12px;overflow:hidden;margin-bottom:20px">
+              <div class="coming-item" style="padding:12px 16px">
+                <div class="coming-icon">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="2" stroke="#16a34a" stroke-width="1.3"/><path d="M5 1v3M13 1v3M2 7h14" stroke="#16a34a" stroke-width="1.3" stroke-linecap="round"/><path d="M6 11l2 2 4-4" stroke="#16a34a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="coming-info">
+                  <div class="coming-title">【Placeholder】Group Dinner</div>
+                  <div class="coming-time">Today 7:30 PM</div>
+                </div>
+                <div class="coming-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#CCCCCC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+              <div class="coming-item" style="padding:12px 16px;border-top:1px solid #EFEFEF">
+                <div class="coming-icon">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="2" stroke="#16a34a" stroke-width="1.3"/><path d="M5 1v3M13 1v3M2 7h14" stroke="#16a34a" stroke-width="1.3" stroke-linecap="round"/><path d="M6 11l2 2 4-4" stroke="#16a34a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="coming-info">
+                  <div class="coming-title">【常规会议】All Hands Meeting</div>
+                  <div class="coming-time">Jan 23 12:30 PM</div>
+                </div>
+                <div class="coming-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#CCCCCC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+            </div>
+
+            <!-- Notes section -->
+            <div class="notes-section">
+              <div class="list-section-label">Notes</div>
+              <div id="notesList">
+                <!-- transcript items injected here -->
+                <div class="note-row" id="existingNote1">
+                  <div class="note-icon manual-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="1.5" width="11" height="13" rx="2" stroke="#0F7FFF" stroke-width="1.2"/><path d="M5 6h6M5 9h4" stroke="#0F7FFF" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="note-info">
+                    <div class="note-title">Inspirational Discussion on Passion and Authe...</div>
+                    <div class="note-meta">Dec 23 10:04 PM</div>
+                  </div>
+                  <div class="note-more">···</div>
+                </div>
+                <div class="note-row" id="existingNote2">
+                  <div class="note-icon manual-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="1.5" width="11" height="13" rx="2" stroke="#0F7FFF" stroke-width="1.2"/><path d="M5 6h6M5 9h4" stroke="#0F7FFF" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="note-info">
+                    <div class="note-title">部署时間點與耗時核對會議</div>
+                    <div class="note-meta">Dec 8 10:45 PM</div>
+                  </div>
+                  <div class="note-more">···</div>
+                </div>
+                <div class="note-row" id="existingNote3">
+                  <div class="note-icon manual-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="1.5" width="11" height="13" rx="2" stroke="#0F7FFF" stroke-width="1.2"/><path d="M5 6h6M5 9h4" stroke="#0F7FFF" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="note-info">
+                    <div class="note-title">Empty Meeting Record</div>
+                    <div class="note-meta">Nov 11 1:14 PM</div>
+                  </div>
+                  <div class="note-more">···</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ SCREEN: WORKING ════ -->
+        <div class="screen hidden" id="screenWorking">
+          <div id="permBanner" style="display:none">
+            <div class="perm-banner">
+              <div class="perm-text">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#FF3D3D" stroke-width="1.2"/><path d="M8 4.5v4" stroke="#FF3D3D" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11" r=".75" fill="#FF3D3D"/></svg>
+                可能无法正常工作，您需要开启系统录音权限。
+              </div>
+              <button class="perm-btn" onclick="closePerm()">立即设置</button>
+            </div>
+          </div>
+          <div class="working-header">
+            <div class="back-btn" onclick="goBack()">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="#606366" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="wh-context">Meeting Notes</span>
+            <span class="wh-sep">/</span>
+            <span class="wh-current" id="wh-mode-label">实时同传</span>
+            <div class="latency"><div class="lat-dot"></div><span id="latencyNum">45ms</span></div>
+            <div class="audio-src" id="audioSrcBadge">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="1" width="5" height="7" rx="2.5" stroke="#606366" stroke-width="1.2"/><path d="M2 7c0 2.485 1.119 4.5 4.5 4.5S11 9.485 11 7" stroke="#606366" stroke-width="1.2" stroke-linecap="round"/></svg>
+              <span id="audioSrcLabel">MacBook 麦克风</span>
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2.5 4.5l3 3 3-3" stroke="#909499" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="transcript-area" id="transcriptArea">
+            <div class="listening-state" id="listeningState">
+              <div class="pulse-wrap">
+                <div class="pulse-ring1"></div><div class="pulse-ring2"></div>
+                <div class="pulse-core">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="9" rx="3" fill="white"/><path d="M2 9c0 3.314 1.343 6 6 6s6-2.686 6-6" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+              <div class="listen-title" id="listenTitle">正在监听...</div>
+              <div class="listen-sub">请开始说话，将会自动识别</div>
+            </div>
+          </div>
+          <div class="waveform" id="waveform"></div>
+          <div class="toolbar">
+            <div class="tb-btn" id="btnSubtitle" onclick="toggleSubtitle()">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="12" rx="3" stroke="#606366" stroke-width="1.5"/><path d="M7 10h8M7 14h5" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span>悬浮字幕</span>
+            </div>
+            <div class="tb-btn" onclick="saveRecord()">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M19 5v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/><rect x="8" y="2" width="6" height="5" rx="1" stroke="#606366" stroke-width="1.5"/></svg>
+              <span>保存</span>
+            </div>
+            <div class="mic-wrap">
+              <div class="mic-btn" id="micBtn" onclick="toggleMic()">
+                <svg id="micIcon" width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="7" y="2" width="8" height="11" rx="4" fill="white"/><path d="M4 12c0 3.866 3.134 7 7 7s7-3.134 7-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M11 19v1.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </div>
+              <div class="mic-timer" id="micTimer">00:00</div>
+            </div>
+            <div class="tb-btn" onclick="openSyncSettings()">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="3" stroke="#606366" stroke-width="1.5"/><path d="M11 2v2M11 18v2M2 11h2M18 11h2M4.9 4.9l1.4 1.4M15.7 15.7l1.4 1.4M4.9 17.1l1.4-1.4M15.7 6.3l1.4-1.4" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span>同传设置</span>
+            </div>
+            <div class="tb-btn ai-label" onclick="openAISummary()">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L9.5 8H4l4.5 3.3-1.7 5.2L11 13l4.2 3.5-1.7-5.2L18 8h-5.5L11 3z" stroke="#f97316" stroke-width="1.5" stroke-linejoin="round" fill="#fff7ed"/></svg>
+              <span>AI 总结</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ SCREEN: DETAIL ════ -->
+        <div class="screen hidden" id="screenDetail">
+          <div class="detail-header">
+            <div class="detail-back" onclick="closeDetail()">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="#606366" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="detail-name-wrap">
+              <div class="detail-name" id="detailName">未命名 1</div>
+              <div class="detail-edit-btn">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M10.5 2l2.5 2.5-8 8H2.5v-2.5l8-8z" stroke="#909499" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="detail-meta-bar">
+            <span class="detail-meta-item">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="2" width="10" height="10" rx="2" stroke="#909499" stroke-width="1.1"/><path d="M4.5 1v2M8.5 1v2M1.5 5.5h10" stroke="#909499" stroke-width="1.1" stroke-linecap="round"/></svg>
+              <span id="detailDate">—</span>
+            </span>
+            <span class="detail-meta-item">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#909499" stroke-width="1.1"/><path d="M6.5 3.5v3l1.5 1" stroke="#909499" stroke-width="1.1" stroke-linecap="round"/></svg>
+              <span id="detailDuration">—</span>
+            </span>
+            <span class="detail-lang-badge" id="detailLangBadge">英语 → 中文</span>
+          </div>
+          <!-- Tabs -->
+          <div class="detail-tabs">
+            <div class="detail-tab active" onclick="switchTab('transcript')">转录</div>
+            <div class="detail-tab" onclick="switchTab('ai')">AI 总结</div>
+            <div class="detail-tab" onclick="switchTab('notes')">笔记</div>
+          </div>
+          <!-- Tab panels -->
+          <div class="tab-panel active" id="tabTranscript">
+            <div class="tp-transcript">
+              <div class="tp-controls">
+                <div></div>
+                <div class="tp-toggle-group">
+                  <div class="tp-toggle-btn on" id="tpToggleOrig" onclick="toggleTpView('orig')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3.5h9M2 6.5h6M2 9.5h4" stroke="#606366" stroke-width="1.2" stroke-linecap="round"/></svg> 原文
+                  </div>
+                  <div class="tp-toggle-btn on" id="tpToggleTrans" onclick="toggleTpView('trans')">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3.5h9M2 6.5h6M2 9.5h4" stroke="#606366" stroke-width="1.2" stroke-linecap="round"/></svg> 译文
+                  </div>
+                </div>
+              </div>
+              <div id="detailSegments"></div>
+            </div>
+          </div>
+          <div class="tab-panel" id="tabAI">
+            <div class="tp-ai">
+              <div class="tp-ai-content" id="detailAIContent">
+                <p style="color:#CCCCCC">尚未生成 AI 总结</p>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel" id="tabNotes">
+            <div class="tp-notes">
+              <div class="notes-editor" contenteditable="true" data-placeholder="在这里添加会议笔记..."></div>
+              <button class="notes-save-btn">保存笔记</button>
+            </div>
+          </div>
+          <!-- Player -->
+          <div class="detail-player">
+            <div class="detail-progress-row">
+              <span class="detail-time-label" id="detailCurTime">00:00</span>
+              <div class="detail-prog-track" onclick="seekDetail(event)">
+                <div class="detail-prog-fill" id="detailProgFill"></div>
+              </div>
+              <span class="detail-time-label" style="text-align:right" id="detailTotalTime">00:00</span>
+            </div>
+            <div class="detail-controls-row">
+              <button class="detail-speed" id="detailSpeed" onclick="cycleSpeed()">1.0x</button>
+              <div class="detail-ctrl-btn" onclick="seekDetailSec(-10)">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11a7 7 0 1 0 1.3-4" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/><path d="M4 4v4h4" stroke="#606366" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="detail-play-btn" onclick="toggleDetailPlay()">
+                <svg id="detailPlayIcon" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 4l9 5-9 5V4z" fill="white"/></svg>
+              </div>
+              <div class="detail-ctrl-btn" onclick="seekDetailSec(10)">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M18 11a7 7 0 1 1-1.3-4" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/><path d="M18 4v4h-4" stroke="#606366" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="detail-share-btn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M14 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V2" stroke="#606366" stroke-width="1.3" stroke-linecap="round"/><path d="M9 1v9M6 4l3-3 3 3" stroke="#606366" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ OVERLAY: Mode Select ════ -->
+        <div class="overlay" id="overlayMode">
+          <div class="modal mode-modal">
+            <div class="mode-modal-title">开始 Live Transcript</div>
+            <div class="mode-modal-sub">选择同传模式，开始录制</div>
+            <div class="mode-cards-row">
+              <div class="mode-card mc-realtime" onclick="selectMode('realtime')">
+                <div class="mc-icon">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="6.5" y="2" width="7" height="10" rx="3.5" fill="white" opacity=".9"/><path d="M3 11c0 3.866 3.134 7 7 7s7-3.134 7-7" stroke="white" stroke-width="1.6" stroke-linecap="round"/><path d="M10 18v1.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                </div>
+                <div class="mc-title">实时同传</div>
+                <div class="mc-sub">会议 / 面对面</div>
+              </div>
+              <div class="mode-card mc-video" onclick="selectMode('video')">
+                <div class="mc-icon">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="12" height="9" rx="2" fill="white" opacity=".9"/><path d="M14 8.5l5-3v9l-5-3V8.5z" fill="white" opacity=".9"/></svg>
+                </div>
+                <div class="mc-title">视频同传</div>
+                <div class="mc-sub">网课 / 直播 / 视频</div>
+              </div>
+            </div>
+            <div class="mode-cancel" onclick="closeModeSelect()">取消</div>
+          </div>
+        </div>
+
+        <!-- ════ OVERLAY: Settings ════ -->
+        <div class="overlay" id="overlaySettings">
+          <div class="modal settings-modal">
+            <div class="sm-header">
+              <div class="sm-langs">
+                <span class="sm-lang">英语（美国）</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="#909499" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="sm-lang">中文（简体）</span>
+              </div>
+              <div class="sm-sub" id="modeLabel">实时同传设置</div>
+            </div>
+            <div class="sm-row">
+              <div class="sm-row-left">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2" fill="#0F7FFF"/><circle cx="9" cy="9" r="6" stroke="#0F7FFF" stroke-width="1.5"/></svg>
+                翻译引擎
+              </div>
+              <div class="sm-row-right">AI 精准翻译<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            </div>
+            <div class="sm-row">
+              <div class="sm-row-left">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="4" y="2" width="10" height="13" rx="2" stroke="#606366" stroke-width="1.5"/></svg>
+                声音来源
+              </div>
+              <div class="sm-row-right" id="smSoundSrc">MacBook 麦克风<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            </div>
+            <div class="sm-row">
+              <div class="sm-row-left">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 5h14M2 9h10M2 13h6" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/></svg>
+                目标语言
+              </div>
+              <div class="sm-row-right">中文（简体）<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            </div>
+            <div class="sm-footer">
+              <div class="remember">
+                <div class="toggle"><div class="toggle-dot"></div></div>
+                <span class="remember-label">记住以上设置</span>
+              </div>
+              <button class="start-btn" onclick="startRecording()">开始同传</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ OVERLAY: AI Summary ════ -->
+        <div class="overlay" id="overlayAI">
+          <div class="modal ai-modal">
+            <div class="ai-header">
+              <div class="ai-title-row">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l1 3.2L13 6l-3 1.2L9 10l-1-2.8L5 6l3-0.8L9 2z" fill="#f97316"/><path d="M14 11l.6 1.8 1.8.6-1.8.6-.6 1.8-.6-1.8-1.8-.6 1.8-.6.6-1.8z" fill="#fbbf24"/></svg>
+                <div class="ai-title">AI 智能总结</div>
+              </div>
+              <div class="close-x" onclick="closeAI()">✕</div>
+            </div>
+            <div class="ai-thinking" id="aiThinking" style="display:none">
+              <div class="spinner" id="aiSpinner"></div>
+              <span>AI 正在分析会议内容...</span>
+            </div>
+            <div class="ai-body" id="aiBody"><p style="color:#CCCCCC">开始录制后可生成 AI 总结</p></div>
+            <div class="ai-footer">
+              <button class="btn-sec" onclick="copyAI()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="#232425" stroke-width="1.2"/><path d="M10 4V3a1 1 0 00-1-1H3a1 1 0 00-1 1v6a1 1 0 001 1h1" stroke="#232425" stroke-width="1.2"/></svg>复制</button>
+              <button class="btn-pri" id="aiGenBtn" onclick="regenerateAI()"><div class="spinner" id="aiSpinnerPri" style="display:none;border-top-color:white"></div><span id="aiGenLabel">生成总结</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ SHEET: Sync Settings ════ -->
+        <div class="sheet-overlay" id="sheetSettings" onclick="if(event.target===this)closeSheet()">
+          <div class="bottom-sheet">
+            <div class="sheet-handle"><div class="handle-bar"></div></div>
+            <div class="sheet-section">
+              <div class="sheet-section-title">字体设置</div>
+              <div class="sheet-card">
+                <div class="sheet-row">
+                  <div class="sheet-row-left"><div>字体大小</div><div>调整转录文字显示大小</div></div>
+                  <div class="sheet-row-right">
+                    <div class="sz-ctrl">
+                      <div class="sz-btn" onclick="changeSize(-1)">−</div>
+                      <div class="sz-num" id="szNum">16</div>
+                      <div class="sz-btn" onclick="changeSize(1)">+</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="sheet-row">
+                  <div class="sheet-row-left"><div>显示原文</div><div>同时显示原文和译文</div></div>
+                  <div class="sheet-row-right">
+                    <div class="toggle" id="toggleOrig" onclick="this.classList.toggle('off')"><div class="toggle-dot"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sheet-section">
+              <div class="sheet-section-title">AI 同传设置</div>
+              <div class="sheet-card">
+                <div class="sheet-row">
+                  <div class="sheet-row-left"><div>精修模式</div><div>AI 实时优化译文质量</div></div>
+                  <div class="sheet-row-right"><div class="toggle" onclick="this.classList.toggle('off')"><div class="toggle-dot"></div></div></div>
+                </div>
+                <div class="sheet-row">
+                  <div class="sheet-row-left"><div>语音灵敏度</div><div>识别触发的音量阈值</div></div>
+                  <div class="sheet-row-right">中等<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+                </div>
+                <div class="sheet-row">
+                  <div class="sheet-row-left"><div>翻译引擎</div><div>选择适合当前场景的引擎</div></div>
+                  <div class="sheet-row-right">AI 精准翻译<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+                </div>
+              </div>
+            </div>
+            <div class="sheet-cancel" onclick="closeSheet()">关闭</div>
+          </div>
+        </div>
+
+        <!-- ════ CONFIRM: Quit ════ -->
+        <div class="confirm-overlay" id="overlayQuit">
+          <div class="confirm-box">
+            <div class="confirm-title">确认退出同传</div>
+            <div class="confirm-body">正在录音中，退出后当前录音将会丢失。<br>是否保存后退出？</div>
+            <div class="confirm-actions">
+              <button class="confirm-cancel" onclick="closeQuitConfirm()">继续同传</button>
+              <button class="confirm-ok" onclick="confirmQuit()">退出不保存</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.panel -->
+    </div><!-- /.main -->
+  </div><!-- /.workspace -->
+</div><!-- /.app -->
+
+<!-- Floating subtitle -->
+<div class="float-subtitle" id="floatSubtitle">
+  <div class="float-ctrl">
+    <div class="ftl ftl-r"></div><div class="ftl ftl-y"></div><div class="ftl ftl-g"></div>
+    <div class="float-spacer"></div>
+    <div class="fcb" onclick="changeFloat(-1)">A−</div>
+    <div class="fcb" onclick="changeFloat(1)">A+</div>
+    <div class="fsep"></div>
+    <div class="fswatch">
+      <div class="fsc sel" style="background:white" onclick="setFloatColor('white','#1a1a2e','#fbbf24')"></div>
+      <div class="fsc" style="background:#fbbf24" onclick="setFloatColor('#fbbf24','#1a1a2e','#fff')"></div>
+      <div class="fsc" style="background:#34d399" onclick="setFloatColor('#0f172a','#f0fdf4','#34d399')"></div>
+      <div class="fsc" style="background:#60a5fa" onclick="setFloatColor('#1e3a5f','#dbeafe','#60a5fa')"></div>
+    </div>
+    <div class="fsep"></div>
+    <div class="close-float" onclick="toggleSubtitle()">×</div>
+  </div>
+  <div class="float-content">
+    <div class="float-orig" id="floatOrig">The new product launch in APAC markets has been particularly successful...</div>
+    <div class="float-trans" id="floatTrans">亚太市场的新产品发布尤其成功，推动了强劲的采用率。</div>
+  </div>
+</div>
+
+<script>
+/* ════════════ STATE ════════════ */
+let mode = 'realtime';
+let recording = false, paused = false;
+let timerSec = 0, timerInterval = null;
+let transcriptInterval = null, waveInterval = null;
+let aiGenerated = false, subtitleVisible = false;
+let szVal = 16, floatFontSize = 17;
+let lineIndex = 0, transcriptBlocks = [];
+let recordCount = 0;
+const recordsData = [];
+
+/* ════════════ TRANSCRIPT DATA ════════════ */
+const realtimeLines = [
+  {t:'00:00', orig:'Good morning everyone. Today we\'re going to discuss the quarterly results and our roadmap for the next six months.', trans:'大家早上好。今天我们将讨论季度业绩以及未来六个月的路线图。'},
+  {t:'00:28', orig:'Our revenue grew by 24% year-over-year, which exceeded our initial projections by a significant margin.', trans:'我们的收入同比增长了 24%，大幅超过了我们最初的预测。'},
+  {t:'01:05', orig:'The new product launch in APAC markets has been particularly successful, driving strong adoption rates.', trans:'亚太市场的新产品发布尤其成功，推动了强劲的采用率。'},
+  {t:'01:42', orig:'Going forward, we plan to double down on enterprise sales and expand our partnerships in Southeast Asia.', trans:'展望未来，我们计划加倍投入企业销售，并扩大在东南亚的合作伙伴关系。'},
+  {t:'02:15', orig:'I\'d like to open the floor for questions. Does anyone have anything they\'d like to discuss?', trans:'我想开放提问环节。有没有人想讨论什么？'},
+];
+const videoLines = [
+  {t:'00:00', orig:'今日は機械学習の基礎について説明します。まず教師あり学習から始めましょう。', trans:'今天我将讲解机器学习的基础知识。首先让我们从监督学习开始。'},
+  {t:'00:35', orig:'教師あり学習では、入力データとその正解ラベルのペアを使ってモデルを訓練します。', trans:'在监督学习中，我们使用输入数据和对应标签的配对来训练模型。'},
+  {t:'01:12', orig:'代表的なアルゴリズムとして、線形回帰、決定木、ニューラルネットワークなどがあります。', trans:'代表性算法包括线性回归、决策树和神经网络等。'},
+  {t:'01:50', orig:'ニューラルネットワークは人間の脳の仕組みからインスピレーションを得た学習モデルです。', trans:'神经网络是一种受人类大脑工作方式启发的学习模型。'},
+];
+let lines = realtimeLines;
+
+const aiContent = `<p><strong>1. 标题：</strong>季度业绩与战略路线图汇报</p>
+<p><strong>2. 中心思想：</strong>本次会议围绕公司季度业绩超预期增长展开，重点介绍了收入增长情况及亚太市场的成功布局。</p>
+<p><strong>3. 核心摘要：</strong>公司本季度收入同比增长 24%，大幅超过预期，亚太新品发布表现亮眼，后续战略侧重企业销售与东南亚市场扩展。</p>
+<p><strong>4. 要点：</strong></p>
+<ul>
+  <li>收入同比增长 24%，超出初始预测</li>
+  <li>亚太市场新产品采用率表现突出</li>
+  <li>未来将加大企业销售投入</li>
+  <li>扩大东南亚合作伙伴关系</li>
+</ul>`;
+const videoAiContent = `<p><strong>1. 标题：</strong>机器学习基础课程</p>
+<p><strong>2. 中心思想：</strong>系统讲解机器学习核心概念，从监督学习入门，逐步介绍主流算法与神经网络原理。</p>
+<p><strong>3. 核心摘要：</strong>课程从监督学习出发，使用输入数据与标签配对训练模型，介绍线性回归、决策树、神经网络等代表算法。</p>
+<p><strong>4. 要点：</strong></p>
+<ul>
+  <li>监督学习：输入数据 + 正解标签配对训练</li>
+  <li>代表算法：线性回归、决策树、神经网络</li>
+  <li>神经网络：受人类大脑工作原理启发</li>
+</ul>`;
+
+/* ════════════ MODE SELECT ════════════ */
+function openModeSelect() {
+  document.getElementById('overlayMode').classList.add('show');
+}
+function closeModeSelect() {
+  document.getElementById('overlayMode').classList.remove('show');
+}
+function selectMode(m) {
+  mode = m;
+  lines = m === 'video' ? videoLines : realtimeLines;
+  closeModeSelect();
+  // Update settings modal labels
+  document.getElementById('modeLabel').textContent = m === 'video' ? '视频同传设置' : '实时同传设置';
+  document.getElementById('smSoundSrc').innerHTML = m === 'video'
+    ? '系统音频<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg>'
+    : 'MacBook 麦克风<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  document.getElementById('overlaySettings').classList.add('show');
+}
+
+/* ════════════ RECORDING ════════════ */
+function startRecording() {
+  document.getElementById('overlaySettings').classList.remove('show');
+  // Update working screen header
+  document.getElementById('wh-mode-label').textContent = mode === 'video' ? '视频同传' : '实时同传';
+  // Update audio source badge
+  const badge = document.getElementById('audioSrcBadge');
+  const label = document.getElementById('audioSrcLabel');
+  if (mode === 'video') {
+    badge.className = 'audio-src audio-src-video';
+    badge.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="3" width="8" height="6" rx="1.5" stroke="#d97706" stroke-width="1.2"/><path d="M10 5l2.5-1.5v6L10 8" stroke="#d97706" stroke-width="1.2" stroke-linecap="round"/></svg><span>系统音频</span><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2.5 4.5l3 3 3-3" stroke="#d97706" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  } else {
+    badge.className = 'audio-src';
+    badge.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="1" width="5" height="7" rx="2.5" stroke="#606366" stroke-width="1.2"/><path d="M2 7c0 2.485 1.119 4.5 4.5 4.5S11 9.485 11 7" stroke="#606366" stroke-width="1.2" stroke-linecap="round"/></svg><span id="audioSrcLabel">MacBook 麦克风</span><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2.5 4.5l3 3 3-3" stroke="#909499" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  }
+  // Mic button style
+  const micBtn = document.getElementById('micBtn');
+  if (mode === 'video') micBtn.classList.add('video-mode');
+  else micBtn.classList.remove('video-mode');
+  // Transition to working screen
+  const se = document.getElementById('screenList');
+  se.classList.add('out');
+  const ws = document.getElementById('screenWorking');
+  ws.style.opacity = ''; ws.style.transform = '';
+  ws.classList.remove('hidden'); ws.classList.remove('out');
+  // Reset transcript
+  document.getElementById('transcriptArea').innerHTML = '<div class="listening-state" id="listeningState"><div class="pulse-wrap"><div class="pulse-ring1"></div><div class="pulse-ring2"></div><div class="pulse-core"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="9" rx="3" fill="white"/><path d="M2 9c0 3.314 1.343 6 6 6s6-2.686 6-6" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></div></div><div class="listen-title" id="listenTitle">正在监听...</div><div class="listen-sub">请开始说话，将会自动识别</div></div>';
+  lineIndex = 0; transcriptBlocks = []; aiGenerated = false;
+  recording = true; paused = false;
+  buildWaveform(); startTimer(); animateWave(true);
+  setTimeout(startTranscript, 2000);
+}
+
+function goBack() {
+  if (recording && timerSec > 0) {
+    document.getElementById('overlayQuit').classList.add('show');
+    return;
+  }
+  doGoBack();
+}
+function closeQuitConfirm() { document.getElementById('overlayQuit').classList.remove('show'); }
+function confirmQuit() {
+  document.getElementById('overlayQuit').classList.remove('show');
+  doGoBack(false);
+}
+function doGoBack(saveFirst) {
+  stopAll();
+  const ws = document.getElementById('screenWorking');
+  ws.classList.add('hidden'); ws.style.opacity = ''; ws.style.transform = '';
+  const sl = document.getElementById('screenList');
+  sl.classList.remove('out'); sl.style.opacity = ''; sl.style.transform = '';
+  if (lineIndex > 0 && saveFirst !== false) addTranscriptToList();
+  if (subtitleVisible) {
+    subtitleVisible = false;
+    document.getElementById('floatSubtitle').classList.remove('show');
+    document.getElementById('btnSubtitle').classList.remove('active-btn');
+  }
+}
+function closePerm() { document.getElementById('permBanner').style.display = 'none'; }
+
+/* ════════════ SAVE ════════════ */
+function saveRecord() {
+  if (lineIndex === 0) return;
+  const btn = event.target.closest('.tb-btn');
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="color:#16a34a">保存中...</span>';
+  btn.style.pointerEvents = 'none';
+  setTimeout(() => doGoBack(true), 900);
+}
+
+function addTranscriptToList() {
+  recordCount++;
+  const sec = timerSec;
+  const mm = String(Math.floor(sec/60)).padStart(2,'0');
+  const ss = String(sec%60).padStart(2,'0');
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const name = `未命名 ${recordCount}`;
+  const isVideo = mode === 'video';
+  const langBadge = isVideo ? '日语 → 中文' : '英语 → 中文';
+  const savedSegs = lines.slice(0, lineIndex + 1).map(l => ({t:l.t, orig:l.orig, trans:l.trans}));
+  const savedAI = aiGenerated ? (isVideo ? videoAiContent : aiContent) : null;
+  const idx = recordsData.length;
+  recordsData.push({name, dateStr, durationStr:`${mm}:${ss}`, totalSec:sec, segments:savedSegs, aiContent:savedAI, langBadge});
+
+  const row = document.createElement('div');
+  row.className = 'note-row';
+  row.setAttribute('onclick', `openRecordDetail(${idx})`);
+  row.innerHTML = `
+    <div class="note-icon transcript-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="4.5" y="1.5" width="7" height="9" rx="3.5" stroke="#0F7FFF" stroke-width="1.2"/><path d="M2.5 9c0 3.038 1.79 5 4.5 5s4.5-1.962 4.5-5" stroke="#0F7FFF" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="note-info">
+      <div class="note-title">${name}</div>
+      <div class="note-meta">
+        <span>${mm}:${ss}</span>
+        <span class="note-badge">${langBadge}</span>
+        <span>${dateStr}</span>
+      </div>
+    </div>
+    <div class="note-more" onclick="event.stopPropagation()">···</div>`;
+  const list = document.getElementById('notesList');
+  list.insertBefore(row, list.firstChild);
+}
+
+/* ════════════ WAVEFORM ════════════ */
+function buildWaveform() {
+  const wf = document.getElementById('waveform');
+  wf.innerHTML = '';
+  for (let i = 0; i < 36; i++) {
+    const d = document.createElement('div');
+    d.className = 'wd ' + (mode === 'video' ? 'wd-orange' : 'wd-blue');
+    d.style.cssText = 'width:5px;height:5px';
+    wf.appendChild(d);
+  }
+}
+function animateWave(on) {
+  clearInterval(waveInterval);
+  const dots = document.querySelectorAll('.wd');
+  if (!on) { dots.forEach(d => d.style.height = '5px'); return; }
+  waveInterval = setInterval(() => {
+    dots.forEach(d => { d.style.height = (Math.random() * 20 + 4) + 'px'; });
+  }, 120);
+}
+
+/* ════════════ TIMER ════════════ */
+function startTimer() {
+  timerSec = 0;
+  timerInterval = setInterval(() => {
+    if (paused) return;
+    timerSec++;
+    const m = String(Math.floor(timerSec/60)).padStart(2,'0');
+    const s = String(timerSec%60).padStart(2,'0');
+    document.getElementById('micTimer').textContent = `${m}:${s}`;
+  }, 1000);
+}
+function stopAll() {
+  recording = false; paused = false;
+  clearInterval(timerInterval); clearInterval(transcriptInterval); clearInterval(waveInterval);
+  document.getElementById('micTimer').textContent = '00:00';
+  document.getElementById('micBtn').classList.remove('paused');
+  animateWave(false);
+}
+
+/* ════════════ MIC ════════════ */
+function toggleMic() {
+  paused = !paused;
+  const btn = document.getElementById('micBtn');
+  if (paused) {
+    btn.classList.add('paused');
+    document.getElementById('micIcon').innerHTML = '<rect x="7" y="6" width="3" height="10" rx="1.5" fill="white"/><rect x="12" y="6" width="3" height="10" rx="1.5" fill="white"/>';
+    animateWave(false);
+  } else {
+    btn.classList.remove('paused');
+    document.getElementById('micIcon').innerHTML = '<rect x="7" y="2" width="8" height="11" rx="4" fill="white"/><path d="M4 12c0 3.866 3.134 7 7 7s7-3.134 7-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M11 19v1.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>';
+    animateWave(true);
+  }
+}
+
+/* ════════════ TRANSCRIPT SIMULATION ════════════ */
+function startTranscript() {
+  if (lineIndex >= lines.length) return;
+  feedNextLine();
+  transcriptInterval = setInterval(() => {
+    if (paused) return;
+    lineIndex++;
+    if (lineIndex < lines.length) feedNextLine();
+    else clearInterval(transcriptInterval);
+  }, 6000);
+}
+function feedNextLine() {
+  const area = document.getElementById('transcriptArea');
+  const ls = document.getElementById('listeningState');
+  if (ls) ls.style.display = 'none';
+  const line = lines[lineIndex];
+  const block = document.createElement('div');
+  block.className = 't-block';
+  block.innerHTML = `
+    <div class="t-time">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#CCCCCC" stroke-width="1.2"/><path d="M6.5 3.5v3l2 1.5" stroke="#CCCCCC" stroke-width="1.2" stroke-linecap="round"/></svg>
+      ${line.t}
+      ${lineIndex === 0 ? '<span class="t-badge">精修</span>' : ''}
+    </div>
+    <div class="t-orig" style="font-size:${szVal}px">${line.orig}</div>
+    <div class="t-trans current" style="font-size:${szVal}px"><span id="trans-${lineIndex}"></span><span class="cursor"></span></div>`;
+  area.appendChild(block);
+  area.scrollTop = area.scrollHeight;
+  transcriptBlocks.push(block);
+  const el = document.getElementById(`trans-${lineIndex}`);
+  const txt = line.trans;
+  let ci = 0;
+  const typ = setInterval(() => {
+    if (paused) return;
+    if (ci < txt.length) { el.textContent += txt[ci]; ci++; area.scrollTop = area.scrollHeight; }
+    else {
+      clearInterval(typ);
+      const cur = block.querySelector('.cursor');
+      if (cur) cur.remove();
+      if (subtitleVisible) {
+        document.getElementById('floatOrig').textContent = line.orig;
+        document.getElementById('floatTrans').textContent = line.trans;
+      }
+    }
+  }, 35);
+}
+
+/* ════════════ SUBTITLE ════════════ */
+function toggleSubtitle() {
+  subtitleVisible = !subtitleVisible;
+  const el = document.getElementById('floatSubtitle');
+  const btn = document.getElementById('btnSubtitle');
+  if (subtitleVisible) {
+    el.classList.add('show'); btn.classList.add('active-btn');
+    if (transcriptBlocks.length > 0) {
+      const last = lines[Math.min(lineIndex, lines.length-1)];
+      document.getElementById('floatOrig').textContent = last.orig;
+      document.getElementById('floatTrans').textContent = last.trans;
+    }
+  } else { el.classList.remove('show'); btn.classList.remove('active-btn'); }
+}
+function changeFloat(d) {
+  floatFontSize = Math.max(12, Math.min(28, floatFontSize + d*2));
+  document.getElementById('floatOrig').style.fontSize = floatFontSize + 'px';
+  document.getElementById('floatTrans').style.fontSize = floatFontSize + 'px';
+}
+function setFloatColor(bg, orig, trans) {
+  const fc = document.getElementById('floatSubtitle');
+  fc.style.background = bg === 'white' ? 'rgba(18,18,28,.9)' : bg;
+  document.getElementById('floatOrig').style.color = bg === 'white' ? 'white' : orig;
+  document.getElementById('floatTrans').style.color = bg === 'white' ? '#fbbf24' : trans;
+  document.querySelectorAll('.fsc').forEach(s => s.classList.remove('sel'));
+  event.target.classList.add('sel');
+}
+
+/* ════════════ AI SUMMARY ════════════ */
+function openAISummary() {
+  document.getElementById('overlayAI').classList.add('show');
+  if (!aiGenerated && lineIndex > 0) {
+    document.getElementById('aiBody').innerHTML = '<p style="color:#909499">⏳ 生成中...</p>';
+    document.getElementById('aiThinking').style.display = 'flex';
+    document.getElementById('aiGenBtn').disabled = true;
+    document.getElementById('aiSpinnerPri').style.display = 'block';
+    document.getElementById('aiGenLabel').textContent = '生成中...';
+    setTimeout(() => {
+      document.getElementById('aiBody').innerHTML = mode === 'video' ? videoAiContent : aiContent;
+      document.getElementById('aiThinking').style.display = 'none';
+      document.getElementById('aiGenBtn').disabled = false;
+      document.getElementById('aiSpinnerPri').style.display = 'none';
+      document.getElementById('aiGenLabel').textContent = '重新生成';
+      aiGenerated = true;
+    }, 2000);
+  }
+}
+function closeAI() { document.getElementById('overlayAI').classList.remove('show'); }
+function copyAI() {
+  const btn = event.target.closest('.btn-sec');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '✓ 已复制'; btn.style.color = '#16a34a'; btn.style.borderColor = '#bbf7d0';
+  setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 1800);
+}
+function regenerateAI() {
+  aiGenerated = false;
+  document.getElementById('aiBody').innerHTML = '<p style="color:#909499">⏳ 重新生成中...</p>';
+  document.getElementById('aiThinking').style.display = 'flex';
+  document.getElementById('aiGenBtn').disabled = true;
+  document.getElementById('aiSpinnerPri').style.display = 'block';
+  document.getElementById('aiGenLabel').textContent = '生成中...';
+  setTimeout(() => {
+    document.getElementById('aiBody').innerHTML = mode === 'video' ? videoAiContent : aiContent;
+    document.getElementById('aiThinking').style.display = 'none';
+    document.getElementById('aiGenBtn').disabled = false;
+    document.getElementById('aiSpinnerPri').style.display = 'none';
+    document.getElementById('aiGenLabel').textContent = '重新生成';
+    aiGenerated = true;
+  }, 2000);
+}
+
+/* ════════════ SYNC SETTINGS ════════════ */
+function openSyncSettings() { document.getElementById('sheetSettings').classList.add('show'); }
+function closeSheet() { document.getElementById('sheetSettings').classList.remove('show'); }
+function changeSize(d) {
+  szVal = Math.max(12, Math.min(22, szVal + d));
+  document.getElementById('szNum').textContent = szVal;
+  document.querySelectorAll('.t-orig,.t-trans').forEach(el => el.style.fontSize = szVal + 'px');
+}
+
+/* ════════════ DETAIL VIEW ════════════ */
+function openRecordDetail(idx) {
+  const rec = recordsData[idx];
+  if (!rec) return;
+  document.getElementById('detailName').textContent = rec.name;
+  document.getElementById('detailDate').textContent = rec.dateStr;
+  document.getElementById('detailDuration').textContent = rec.durationStr;
+  document.getElementById('detailTotalTime').textContent = rec.durationStr;
+  document.getElementById('detailLangBadge').textContent = rec.langBadge;
+  detailTotalSec = rec.totalSec;
+  detailCurSec = 0; detailSpeedVal = 1.0;
+  document.getElementById('detailSpeed').textContent = '1.0x';
+  tpShowOrig = true; tpShowTrans = true;
+  document.getElementById('tpToggleOrig').classList.add('on');
+  document.getElementById('tpToggleTrans').classList.add('on');
+  // Render segments
+  const cont = document.getElementById('detailSegments');
+  cont.innerHTML = '';
+  rec.segments.forEach(seg => {
+    const d = document.createElement('div');
+    d.className = 'tp-segment';
+    d.innerHTML = `
+      <div class="tp-seg-time">
+        <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2.5 1.5l5 3-5 3V1.5z" fill="#0F7FFF"/></svg>
+        ${seg.t}
+      </div>
+      <div class="tp-seg-orig">${seg.orig}</div>
+      <div class="tp-seg-trans">${seg.trans}</div>`;
+    cont.appendChild(d);
+  });
+  // AI content
+  document.getElementById('detailAIContent').innerHTML = rec.aiContent
+    ? rec.aiContent
+    : '<p style="color:#CCCCCC">尚未生成 AI 总结</p>';
+  updateDetailProgress();
+  stopDetailPlay();
+  // Reset tabs
+  switchTab('transcript');
+  // Switch screens
+  const sl = document.getElementById('screenList');
+  sl.classList.add('out'); sl.style.opacity = ''; sl.style.transform = '';
+  const sd = document.getElementById('screenDetail');
+  sd.classList.remove('hidden'); sd.classList.remove('out');
+  sd.style.opacity = ''; sd.style.transform = '';
+}
+function closeDetail() {
+  stopDetailPlay();
+  const sd = document.getElementById('screenDetail');
+  sd.classList.add('hidden'); sd.style.opacity = ''; sd.style.transform = '';
+  const sl = document.getElementById('screenList');
+  sl.classList.remove('out'); sl.classList.remove('hidden');
+  sl.style.opacity = ''; sl.style.transform = '';
+}
+function switchTab(name) {
+  document.querySelectorAll('.detail-tab').forEach((t,i) => {
+    const names = ['transcript','ai','notes'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const map = {transcript:'tabTranscript', ai:'tabAI', notes:'tabNotes'};
+  document.getElementById(map[name]).classList.add('active');
+}
+let tpShowOrig = true, tpShowTrans = true;
+function toggleTpView(which) {
+  if (which === 'orig') {
+    tpShowOrig = !tpShowOrig;
+    document.getElementById('tpToggleOrig').classList.toggle('on', tpShowOrig);
+    document.querySelectorAll('.tp-seg-orig').forEach(el => el.style.display = tpShowOrig ? '' : 'none');
+  } else {
+    tpShowTrans = !tpShowTrans;
+    document.getElementById('tpToggleTrans').classList.toggle('on', tpShowTrans);
+    document.querySelectorAll('.tp-seg-trans').forEach(el => el.style.display = tpShowTrans ? '' : 'none');
+  }
+}
+
+/* ════════════ DETAIL PLAYER ════════════ */
+let detailPlaying = false, detailTotalSec = 0, detailCurSec = 0;
+let detailInterval = null, detailSpeedVal = 1.0;
+const speedSteps = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
+function toggleDetailPlay() { detailPlaying ? stopDetailPlay() : startDetailPlay(); }
+function startDetailPlay() {
+  if (detailCurSec >= detailTotalSec) detailCurSec = 0;
+  detailPlaying = true;
+  document.getElementById('detailPlayIcon').innerHTML = '<rect x="4" y="3" width="3" height="12" rx="1" fill="white"/><rect x="11" y="3" width="3" height="12" rx="1" fill="white"/>';
+  detailInterval = setInterval(() => {
+    detailCurSec += detailSpeedVal;
+    if (detailCurSec >= detailTotalSec) { detailCurSec = detailTotalSec; stopDetailPlay(); }
+    updateDetailProgress();
+  }, 1000);
+}
+function stopDetailPlay() {
+  detailPlaying = false; clearInterval(detailInterval);
+  document.getElementById('detailPlayIcon').innerHTML = '<path d="M6 4l9 5-9 5V4z" fill="white"/>';
+}
+function updateDetailProgress() {
+  const pct = detailTotalSec > 0 ? (detailCurSec / detailTotalSec * 100) : 0;
+  document.getElementById('detailProgFill').style.width = Math.min(100, pct) + '%';
+  document.getElementById('detailCurTime').textContent = fmtSec(Math.floor(detailCurSec));
+}
+function fmtSec(s) { return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
+function seekDetailSec(d) { detailCurSec = Math.max(0, Math.min(detailTotalSec, detailCurSec + d)); updateDetailProgress(); }
+function seekDetail(e) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  detailCurSec = Math.round(Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) * detailTotalSec);
+  updateDetailProgress();
+}
+function cycleSpeed() {
+  const i = speedSteps.indexOf(detailSpeedVal);
+  detailSpeedVal = speedSteps[(i + 1) % speedSteps.length];
+  document.getElementById('detailSpeed').textContent = detailSpeedVal + 'x';
+}
+
+/* Outside click close */
+document.getElementById('overlayAI').addEventListener('click', function(e){ if(e.target===this) closeAI(); });
+document.getElementById('overlayMode').addEventListener('click', function(e){ if(e.target===this) closeModeSelect(); });
+</script>
+</body>
+</html>
