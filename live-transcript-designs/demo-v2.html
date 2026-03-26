@@ -52,32 +52,30 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 
 /* ── Action Cards ── */
 .action-cards{display:flex;gap:12px;margin-bottom:18px}
-.ac{flex:1;border-radius:16px;padding:20px 18px 20px 18px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:0;position:relative;overflow:hidden;transition:transform .16s cubic-bezier(.34,1.4,.64,1),box-shadow .16s;user-select:none;min-height:118px}
+.ac{flex:1;border-radius:16px;padding:18px 16px 16px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;position:relative;overflow:hidden;transition:transform .16s cubic-bezier(.34,1.4,.64,1),box-shadow .16s;user-select:none;min-height:128px}
 .ac:hover{transform:translateY(-2px)}
 .ac:active{transform:translateY(0) scale(.98);transition-duration:.08s}
-.ac-text{flex:1;min-width:0;margin-top:12px}
-/* New Note — soft green */
-.ac-new{background:#F0FDF6;border:1.5px solid #C4EDD8;box-shadow:0 2px 8px rgba(22,163,74,.05)}
-.ac-new:hover{background:#E6FAF0;box-shadow:0 4px 14px rgba(22,163,74,.11)}
-/* Live Transcript — soft blue */
-.ac-lt{background:#EEF4FF;border:1.5px solid #D4E5FF;box-shadow:0 2px 8px rgba(15,127,255,.06)}
-.ac-lt:hover{background:#E5EFFE;box-shadow:0 4px 14px rgba(15,127,255,.12)}
-/* Import — soft amber */
-.ac-import{background:#FFF6EE;border:1.5px solid #FFE5CC;box-shadow:0 2px 8px rgba(240,120,30,.05)}
-.ac-import:hover{background:#FFF0E2;box-shadow:0 4px 14px rgba(240,120,30,.1)}
-/* icon wrapper — no extra bg, icon already has its own design */
-.ac-icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-/* text */
-.ac-label{font-size:15px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px}
+/* dashed border */
+.ac-new{background:#F0FDF6;border:1.5px dashed #C4EDD8}
+.ac-new:hover{background:#E6FAF0}
+.ac-lt{background:#EEF4FF;border:1.5px dashed #D4E5FF}
+.ac-lt:hover{background:#E5EFFE}
+.ac-import{background:#FFF6EE;border:1.5px dashed #FFE5CC}
+.ac-import:hover{background:#FFF0E2}
+/* icon — circle bg, top-left */
+.ac-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ac-new .ac-icon{background:rgba(22,163,74,.15)}
+.ac-lt .ac-icon{background:rgba(15,127,255,.15)}
+.ac-import .ac-icon{background:rgba(224,112,32,.15)}
+/* text pinned to bottom-left */
+.ac-text{position:absolute;bottom:16px;left:16px;right:40px}
+.ac-label{font-size:14px;font-weight:700;letter-spacing:-.2px;margin-bottom:3px}
 .ac-new .ac-label{color:#065f3a}
 .ac-lt .ac-label{color:#0052cc}
 .ac-import .ac-label{color:#b84a00}
-.ac-desc{font-size:12px;line-height:1.4}
-.ac-new .ac-desc{color:#4a9e72}
-.ac-lt .ac-desc{color:#5b8fd4}
-.ac-import .ac-desc{color:#c47a40}
+.ac-desc{font-size:11.5px;line-height:1.4;color:#909499}
 /* chevron — bottom right */
-.ac-arrow{position:absolute;bottom:18px;right:14px;opacity:.5;transition:opacity .15s,transform .15s}
+.ac-arrow{position:absolute;bottom:18px;right:14px;transition:opacity .15s,transform .15s;opacity:.45}
 .ac:hover .ac-arrow{opacity:.8;transform:translateX(2px)}
 .ac-new .ac-arrow{color:#16a34a}
 .ac-lt .ac-arrow{color:#0F7FFF}
