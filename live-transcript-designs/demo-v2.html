@@ -234,27 +234,30 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 .overlay.show .modal{transform:none;opacity:1}
 
 /* Mode select modal */
-.mode-modal{width:460px;padding:28px 28px 24px}
-.mode-modal-header{text-align:center;margin-bottom:22px}
-.mode-modal-title{font-size:18px;font-weight:700;color:#111827;margin-bottom:5px;letter-spacing:-.3px}
+.mode-modal{width:500px;padding:28px 28px 28px}
+.mode-modal-header{text-align:left;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-start}
+.mode-modal-header-text{}
+.mode-modal-title{font-size:22px;font-weight:700;color:#111827;margin-bottom:6px;letter-spacing:-.4px}
 .mode-modal-sub{font-size:13px;color:#9ca3af;line-height:1.5}
-.mode-cards-row{display:flex;gap:14px;margin-bottom:20px}
-.mode-card{flex:1;height:144px;border-radius:18px;padding:18px;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s;user-select:none}
-.mode-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.1)}
+.mode-modal-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#9ca3af;border-radius:6px;transition:background .15s}
+.mode-modal-close:hover{background:#f5f5f5;color:#555}
+.mode-cards-row{display:flex;gap:14px;margin-bottom:0}
+.mode-card{flex:1;height:150px;border-radius:16px;padding:18px;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s;user-select:none}
+.mode-card:hover{transform:translateY(-3px)}
 .mode-card:active{transform:translateY(0) scale(.99);transition-duration:.08s}
-.mc-realtime{background:#EEF4FF;border:1.5px solid #D4E5FF;box-shadow:0 2px 8px rgba(15,127,255,.06)}
-.mc-realtime:hover{background:#E5EFFE;box-shadow:0 12px 28px rgba(15,127,255,.12)}
-.mc-video{background:#FFF6EE;border:1.5px solid #FFE5CC;box-shadow:0 2px 8px rgba(240,120,30,.05)}
-.mc-video:hover{background:#FFF0E2;box-shadow:0 12px 28px rgba(240,120,30,.1)}
+.mc-realtime{background:#EEF4FF;border:1.5px dashed #C5D8F8}
+.mc-realtime:hover{background:#E5EFFE}
+.mc-video{background:#FFF5EB;border:1.5px dashed #F5D5B0}
+.mc-video:hover{background:#FFF0E2}
 .mc-icon{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
-.mc-realtime .mc-icon{background:rgba(15,127,255,.12)}
-.mc-video .mc-icon{background:rgba(224,112,32,.12)}
+.mc-realtime .mc-icon{background:#D6E4FF}
+.mc-video .mc-icon{background:#FFE8D0}
 .mc-title{font-size:17px;font-weight:700;margin-bottom:4px;letter-spacing:-.2px}
-.mc-realtime .mc-title{color:#0052cc}
-.mc-video .mc-title{color:#b84a00}
+.mc-realtime .mc-title{color:#1A5DAB;font-size:15px;font-weight:700;letter-spacing:-.2px}
+.mc-video .mc-title{color:#C75B24;font-size:15px;font-weight:700;letter-spacing:-.2px}
 .mc-sub{font-size:12px;letter-spacing:.01em}
-.mc-realtime .mc-sub{color:#5b8fd4}
-.mc-video .mc-sub{color:#c47a40}
+.mc-realtime .mc-sub{color:#8899AA;font-size:12px}
+.mc-video .mc-sub{color:#999;font-size:12px}
 .mode-cancel{text-align:center;padding:10px 12px;font-size:14px;color:#9ca3af;cursor:pointer;border-radius:10px;transition:background .12s,color .12s;font-weight:500;margin:-4px -4px 0}
 .mode-cancel:hover{background:#f4f4f6;color:#606366}
 
@@ -710,34 +713,31 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
         <div class="overlay" id="overlayMode">
           <div class="modal mode-modal">
             <div class="mode-modal-header">
-              <div class="mode-modal-title">开始 Live Transcript</div>
-              <div class="mode-modal-sub">选择同传模式，开始录制</div>
+              <div class="mode-modal-header-text">
+                <div class="mode-modal-title">Start Live Transcript</div>
+                <div class="mode-modal-sub">Select interpretation mode, start recording</div>
+              </div>
+              <div class="mode-modal-close" onclick="closeModeSelect()">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              </div>
             </div>
             <div class="mode-cards-row">
               <div class="mode-card mc-realtime" onclick="selectMode('realtime')">
-                <div class="mc-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <rect x="8" y="2" width="4" height="9.5" rx="2" stroke="#0F7FFF" stroke-width="1.6"/>
-                    <path d="M5.5 10.5a4.5 4.5 0 0 1 9 0" stroke="#0F7FFF" stroke-width="1.6" stroke-linecap="round"/>
-                    <path d="M10 15v2" stroke="#0F7FFF" stroke-width="1.6" stroke-linecap="round"/>
-                    <path d="M7.5 17h5" stroke="#0F7FFF" stroke-width="1.6" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <div class="mc-title">实时同传</div>
-                <div class="mc-sub">会议 / 面对面</div>
+                <div class="mc-icon"><svg width="22" height="22" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="34" height="34" rx="9" fill="#0F7FFF" fill-opacity="0.12"/>
+<path d="M19.9193 11.5834C19.9193 9.97252 18.6134 8.66669 17.0026 8.66669C15.3918 8.66669 14.0859 9.97252 14.0859 11.5834V17C14.0859 18.6109 15.3918 19.9167 17.0026 19.9167C18.6134 19.9167 19.9193 18.6109 19.9193 17V11.5834Z" stroke="#0052CC" stroke-width="1.25" stroke-linejoin="round"/>
+<path d="M10.75 16.5833C10.75 20.0351 13.5482 22.8333 17 22.8333C20.4518 22.8333 23.25 20.0351 23.25 16.5833" stroke="#0052CC" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M17 22.8333V25.3333" stroke="#0052CC" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="mc-title">Real-time Interpretation</div>
+                <div class="mc-sub">Meeting / Face-to-Face</div>
               </div>
               <div class="mode-card mc-video" onclick="selectMode('video')">
-                <div class="mc-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <rect x="2" y="5.5" width="12" height="9" rx="2" stroke="#e07020" stroke-width="1.6"/>
-                    <path d="M14 9l5-3v8l-5-3V9z" stroke="#e07020" stroke-width="1.6" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <div class="mc-title">视频同传</div>
-                <div class="mc-sub">网课 / 直播 / 视频</div>
+                <div class="mc-icon"><svg width="22" height="22" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="39" height="39" rx="12" fill="#E07020" fill-opacity="0.12"/>
+<path d="M11.037 13.5755C11.037 13.1081 11.4159 12.7292 11.8833 12.7292H23.7323C24.1997 12.7292 24.5786 13.1081 24.5786 13.5755V17.3841L27.9641 14.845V24.5781L24.5786 22.039V25.4245C24.5786 25.8919 24.1997 26.2708 23.7323 26.2708H11.8833C11.4159 26.2708 11.037 25.8919 11.037 25.4245V13.5755Z" stroke="#B84A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16.5409 20.3464C17.7095 20.3464 18.6568 19.3991 18.6568 18.2305C18.6568 17.0619 17.7095 16.1146 16.5409 16.1146C15.3724 16.1146 14.425 17.0619 14.425 18.2305C14.425 19.3991 15.3724 20.3464 16.5409 20.3464Z" stroke="#B84A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="mc-title">Video Interpretation</div>
+                <div class="mc-sub">Online Course / Live Broadcast / Video</div>
               </div>
             </div>
-            <div class="mode-cancel" onclick="closeModeSelect()">取消</div>
           </div>
         </div>
 
