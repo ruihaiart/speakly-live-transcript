@@ -52,10 +52,10 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 
 /* ── Action Cards ── */
 .action-cards{display:flex;gap:12px;margin-bottom:18px}
-.ac{flex:1;border-radius:16px;padding:31px 18px;cursor:pointer;display:flex;flex-direction:row;align-items:center;gap:14px;position:relative;overflow:hidden;transition:transform .16s cubic-bezier(.34,1.4,.64,1),box-shadow .16s;user-select:none}
+.ac{flex:1;border-radius:16px;padding:20px 18px 20px 18px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:0;position:relative;overflow:hidden;transition:transform .16s cubic-bezier(.34,1.4,.64,1),box-shadow .16s;user-select:none;min-height:118px}
 .ac:hover{transform:translateY(-2px)}
 .ac:active{transform:translateY(0) scale(.98);transition-duration:.08s}
-.ac-text{flex:1;min-width:0}
+.ac-text{flex:1;min-width:0;margin-top:12px}
 /* New Note — soft green */
 .ac-new{background:#F0FDF6;border:1.5px solid #C4EDD8;box-shadow:0 2px 8px rgba(22,163,74,.05)}
 .ac-new:hover{background:#E6FAF0;box-shadow:0 4px 14px rgba(22,163,74,.11)}
@@ -65,13 +65,10 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 /* Import — soft amber */
 .ac-import{background:#FFF6EE;border:1.5px solid #FFE5CC;box-shadow:0 2px 8px rgba(240,120,30,.05)}
 .ac-import:hover{background:#FFF0E2;box-shadow:0 4px 14px rgba(240,120,30,.1)}
-/* icon wrapper */
-.ac-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ac-new .ac-icon{background:rgba(22,163,74,.12);border:none}
-.ac-lt .ac-icon{background:rgba(15,127,255,.12);border:none}
-.ac-import .ac-icon{background:rgba(224,112,32,.12);border:none}
+/* icon wrapper — no extra bg, icon already has its own design */
+.ac-icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 /* text */
-.ac-label{font-size:15px;font-weight:700;letter-spacing:-.2px;margin-bottom:3px}
+.ac-label{font-size:15px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px}
 .ac-new .ac-label{color:#065f3a}
 .ac-lt .ac-label{color:#0052cc}
 .ac-import .ac-label{color:#b84a00}
@@ -79,9 +76,9 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 .ac-new .ac-desc{color:#4a9e72}
 .ac-lt .ac-desc{color:#5b8fd4}
 .ac-import .ac-desc{color:#c47a40}
-/* chevron */
-.ac-arrow{flex-shrink:0;opacity:.35;transition:opacity .15s,transform .15s}
-.ac:hover .ac-arrow{opacity:.65;transform:translateX(2px)}
+/* chevron — bottom right */
+.ac-arrow{position:absolute;bottom:18px;right:14px;opacity:.5;transition:opacity .15s,transform .15s}
+.ac:hover .ac-arrow{opacity:.8;transform:translateX(2px)}
 .ac-new .ac-arrow{color:#16a34a}
 .ac-lt .ac-arrow{color:#0F7FFF}
 .ac-import .ac-arrow{color:#e07020}
@@ -415,29 +412,29 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
             </div>
             <div class="action-cards">
               <!-- New Note -->
-              <div class="ac ac-new">
-                <div class="ac-icon">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M13 3L15.5 5.5 6 15H3.5v-2.5L13 3Z" stroke="#16a34a" stroke-width="1.3" stroke-linejoin="round"/>
-                    <path d="M11 5l2.5 2.5" stroke="#16a34a" stroke-width="1.1" stroke-linecap="round"/>
-                  </svg>
-                </div>
+              <div class="ac ac-new" onclick="createNewNote()">
+                <div class="ac-icon"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="34" height="34" rx="9" fill="#16A34A" fill-opacity="0.12"/>
+<g clip-path="url(#clip0_233_4911)">
+<path d="M9.5 16.7891H24.0833" stroke="#065F3A" stroke-width="1.25" stroke-linecap="round"/>
+<path d="M16.7891 24.0833V9.5" stroke="#065F3A" stroke-width="1.25" stroke-linecap="round"/>
+</g>
+<defs>
+<clipPath id="clip0_233_4911">
+<rect width="20" height="20" fill="white" transform="translate(7 7)"/>
+</clipPath>
+</defs></svg></div>
                 <div class="ac-text">
                   <div class="ac-label">New Note</div>
-                  <div class="ac-desc">手动创建会议笔记</div>
+                  <div class="ac-desc">手动创建会议记录</div>
                 </div>
                 <svg class="ac-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <!-- Live Transcript -->
-              <div class="ac ac-lt" onclick="openModeSelect()">
-                <div class="ac-icon">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <rect x="7.5" y="1.5" width="3" height="8.5" rx="1.5" stroke="#0F7FFF" stroke-width="1.4"/>
-                    <path d="M6 10a3 3 0 0 1 6 0" stroke="#0F7FFF" stroke-width="1.4" stroke-linecap="round"/>
-                    <path d="M9 13v2" stroke="#0F7FFF" stroke-width="1.4" stroke-linecap="round"/>
-                    <path d="M7 15h4" stroke="#0F7FFF" stroke-width="1.4" stroke-linecap="round"/>
-                  </svg>
-                </div>
+              <div class="ac ac-lt" onclick="startLiveTranscript()">
+                <div class="ac-icon"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="34" height="34" rx="9" fill="#0F7FFF" fill-opacity="0.12"/>
+<path d="M19.9193 11.5833C19.9193 9.97249 18.6134 8.66666 17.0026 8.66666C15.3918 8.66666 14.0859 9.97249 14.0859 11.5833V17C14.0859 18.6108 15.3918 19.9167 17.0026 19.9167C18.6134 19.9167 19.9193 18.6108 19.9193 17V11.5833Z" stroke="#0052CC" stroke-width="1.25" stroke-linejoin="round"/>
+<path d="M10.75 16.5833C10.75 20.0351 13.5482 22.8333 17 22.8333C20.4518 22.8333 23.25 20.0351 23.25 16.5833" stroke="#0052CC" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M17 22.8333V25.3333" stroke="#0052CC" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div class="ac-text">
                   <div class="ac-label">Live Transcript</div>
                   <div class="ac-desc">实时录音 · AI 转写</div>
@@ -445,18 +442,20 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
                 <svg class="ac-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <!-- Import -->
-              <div class="ac ac-import">
-                <div class="ac-icon">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M9 2v9" stroke="#e07020" stroke-width="1.4" stroke-linecap="round"/>
-                    <path d="M6 8l3 3 3-3" stroke="#e07020" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M3 13v2.5a.5.5 0 00.5.5h11a.5.5 0 00.5-.5V13" stroke="#e07020" stroke-width="1.4" stroke-linecap="round"/>
-                  </svg>
-                </div>
+              <div class="ac ac-import" onclick="importFile()">
+                <div class="ac-icon"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="34" height="34" rx="9" fill="#E07020" fill-opacity="0.12"/>
+<path d="M18.8255 24.2891H11.5339C11.1311 24.2891 10.8047 23.9626 10.8047 23.5599V10.4349C10.8047 10.0322 11.1311 9.70573 11.5339 9.70573H21.7422C22.1449 9.70573 22.4714 10.0322 22.4714 10.4349V16.1641" stroke="#B84A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.9922 18.4609H15.9089" stroke="#B84A00" stroke-width="1.25" stroke-linecap="round"/>
+<path d="M12.9922 14.8125H17.3672" stroke="#B84A00" stroke-width="1.25" stroke-linecap="round"/>
+<path d="M21.0938 24.0833V19.5" stroke="#B84A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M19.5 20.2578L20.0312 19.7266L21.0937 18.6641L22.1562 19.7266L22.6875 20.2578" stroke="#B84A00" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div class="ac-text">
                   <div class="ac-label">Import</div>
                   <div class="ac-desc">导入音频或文字文件</div>
                 </div>
+                <svg class="ac-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
                 <svg class="ac-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
             </div>
