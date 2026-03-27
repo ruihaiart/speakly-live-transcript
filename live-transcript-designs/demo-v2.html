@@ -968,6 +968,10 @@ function selectMode(m) {
   document.getElementById('overlaySettings').classList.add('show');
 }
 
+function closeSettings() {
+  document.getElementById('overlaySettings').classList.remove('show');
+}
+
 /* ════════════ RECORDING ════════════ */
 function startRecording() {
   document.getElementById('overlaySettings').classList.remove('show');
