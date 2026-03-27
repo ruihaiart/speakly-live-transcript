@@ -263,7 +263,7 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 .mode-cancel:hover{background:#f4f4f6;color:#606366}
 
 /* Settings modal */
-.settings-modal{width:460px}
+.settings-modal{width:460px;position:relative}
 .sm-header{padding:22px 28px 16px;text-align:center;border-bottom:1px solid #EFEFEF;position:relative}
 .sm-langs{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px}
 .sm-lang{font-size:15px;font-weight:600;color:#232425}
@@ -750,10 +750,10 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
         <!-- ════ OVERLAY: Settings ════ -->
         <div class="overlay" id="overlaySettings" onclick="if(event.target===this)closeSettings()">
           <div class="modal settings-modal">
+            <div onclick="closeSettings()" style="position:absolute;top:14px;right:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;color:#c0c4cc;z-index:10;transition:background .15s">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
             <div class="sm-header">
-              <div style="position:absolute;top:14px;right:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;color:#c0c4cc;transition:background .15s" onclick="closeSettings()" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='none'">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-              </div>
               <div class="sm-langs">
                 <span class="sm-lang">英语（美国）</span>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="#909499" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
