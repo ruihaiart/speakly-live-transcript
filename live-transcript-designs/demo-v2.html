@@ -228,7 +228,7 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 /* ════════════════════════════════════════
    OVERLAYS
 ════════════════════════════════════════ */
-.overlay{position:absolute;inset:0;background:rgba(10,10,18,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:20px;display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .22s}
+.overlay{position:absolute;inset:0;background:rgba(10,10,18,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:16px;display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .22s}
 .overlay.show{opacity:1;pointer-events:all}
 .modal{background:white;border-radius:20px;box-shadow:0 8px 16px rgba(0,0,0,.06),0 24px 48px rgba(0,0,0,.15),0 0 0 1px rgba(0,0,0,.04);transform:translateY(16px) scale(.96);transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .22s;opacity:0}
 .overlay.show .modal{transform:none;opacity:1}
@@ -300,7 +300,7 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 .btn-pri:hover{background:#0E72E5}
 
 /* Bottom sheet */
-.sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);border-radius:20px;z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);border-radius:16px;z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
 .sheet-overlay.show{opacity:1;pointer-events:all}
 .bottom-sheet{width:100%;background:white;border-radius:16px 16px 20px 20px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow:hidden}
 .sheet-overlay.show .bottom-sheet{transform:translateY(0)}
@@ -322,7 +322,7 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
 .sheet-cancel:hover{background:#FAFAFA}
 
 /* Quit confirm */
-.confirm-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:20px;display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.confirm-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);border-radius:16px;display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
 .confirm-overlay.show{opacity:1;pointer-events:all}
 .confirm-box{background:white;border-radius:16px;width:380px;box-shadow:0 20px 40px rgba(0,0,0,.2);transform:scale(.95);transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0;overflow:hidden}
 .confirm-overlay.show .confirm-box{transform:none;opacity:1}
@@ -707,174 +707,156 @@ body{font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif;background:#c
           </div>
         </div>
 
-        <!-- ════ OVERLAY: Mode Select ════ -->
-        <div class="overlay" id="overlayMode">
-          <div class="modal mode-modal">
-            <div class="mode-modal-header">
-              <div>
-                <div class="mode-modal-title">选择录制模式</div>
-                <div class="mode-modal-sub">开始后将实时转写 + AI 翻译</div>
-              </div>
-              <div class="mode-modal-close" onclick="closeModeSelect()">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-              </div>
-            </div>
-            <div class="mode-options">
-              <!-- Primary: Live Meeting -->
-              <div class="mode-opt mo-primary" onclick="selectMode('realtime')">
-                <div class="mo-icon">
-                  <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><path d="M19.9193 11.5834C19.9193 9.97252 18.6134 8.66669 17.0026 8.66669C15.3918 8.66669 14.0859 9.97252 14.0859 11.5834V17C14.0859 18.6109 15.3918 19.9167 17.0026 19.9167C18.6134 19.9167 19.9193 18.6109 19.9193 17V11.5834Z" stroke="#0052CC" stroke-width="1.4" stroke-linejoin="round"/><path d="M10.75 16.5833C10.75 20.0351 13.5482 22.8333 17 22.8333C20.4518 22.8333 23.25 20.0351 23.25 16.5833" stroke="#0052CC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 22.8333V25.3333" stroke="#0052CC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <div class="mo-body">
-                  <div class="mo-title">Live Meeting</div>
-                  <div class="mo-desc">面对面会议 · 麦克风实时收音转写</div>
-                </div>
-                <svg class="mo-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-              <!-- Secondary: Video / Screen -->
-              <div class="mode-opt mo-secondary" onclick="selectMode('video')">
-                <div class="mo-icon">
-                  <svg width="32" height="32" viewBox="0 0 39 39" fill="none"><path d="M11.037 13.5755C11.037 13.1081 11.4159 12.7292 11.8833 12.7292H23.7323C24.1997 12.7292 24.5786 13.1081 24.5786 13.5755V17.3841L27.9641 14.845V24.5781L24.5786 22.039V25.4245C24.5786 25.8919 24.1997 26.2708 23.7323 26.2708H11.8833C11.4159 26.2708 11.037 25.8919 11.037 25.4245V13.5755Z" stroke="#B84A00" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5409 20.3464C17.7095 20.3464 18.6568 19.3991 18.6568 18.2305C18.6568 17.0619 17.7095 16.1146 16.5409 16.1146C15.3724 16.1146 14.425 17.0619 14.425 18.2305C14.425 19.3991 15.3724 20.3464 16.5409 20.3464Z" stroke="#B84A00" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <div class="mo-body">
-                  <div class="mo-title">Video / Screen</div>
-                  <div class="mo-desc">在线课程 · 直播 · 播放视频时同传</div>
-                </div>
-                <svg class="mo-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-            </div>
-            <div class="mode-cancel" onclick="closeModeSelect()">取消</div>
-          </div>
-        </div>
-
-        <!-- ════ OVERLAY: Settings ════ -->
-        <div class="overlay" id="overlaySettings" onclick="if(event.target===this)closeSettings()">
-          <div class="modal settings-modal">
-            <div onclick="closeSettings()" style="position:absolute;top:14px;right:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;color:#c0c4cc;z-index:10;transition:background .15s">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </div>
-            <div class="sm-header">
-              <div class="sm-langs">
-                <span class="sm-lang">英语（美国）</span>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="#909499" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span class="sm-lang">中文（简体）</span>
-              </div>
-              <div class="sm-sub" id="modeLabel">实时同传设置</div>
-            </div>
-            <div class="sm-row">
-              <div class="sm-row-left">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2" fill="#0F7FFF"/><circle cx="9" cy="9" r="6" stroke="#0F7FFF" stroke-width="1.5"/></svg>
-                翻译引擎
-              </div>
-              <div class="sm-row-right">AI 精准翻译<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            </div>
-            <div class="sm-row">
-              <div class="sm-row-left">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="4" y="2" width="10" height="13" rx="2" stroke="#606366" stroke-width="1.5"/></svg>
-                声音来源
-              </div>
-              <div class="sm-row-right" id="smSoundSrc">MacBook 麦克风<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            </div>
-            <div class="sm-row">
-              <div class="sm-row-left">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 5h14M2 9h10M2 13h6" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/></svg>
-                目标语言
-              </div>
-              <div class="sm-row-right">中文（简体）<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            </div>
-            <div class="sm-footer">
-              <div class="remember">
-                <div class="toggle"><div class="toggle-dot"></div></div>
-                <span class="remember-label">记住以上设置</span>
-              </div>
-              <button class="start-btn" onclick="startRecording()">开始同传</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ════ OVERLAY: AI Summary ════ -->
-        <div class="overlay" id="overlayAI">
-          <div class="modal ai-modal">
-            <div class="ai-header">
-              <div class="ai-title-row">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l1 3.2L13 6l-3 1.2L9 10l-1-2.8L5 6l3-0.8L9 2z" fill="#f97316"/><path d="M14 11l.6 1.8 1.8.6-1.8.6-.6 1.8-.6-1.8-1.8-.6 1.8-.6.6-1.8z" fill="#fbbf24"/></svg>
-                <div class="ai-title">AI 智能总结</div>
-              </div>
-              <div class="close-x" onclick="closeAI()">✕</div>
-            </div>
-            <div class="ai-thinking" id="aiThinking" style="display:none">
-              <div class="spinner" id="aiSpinner"></div>
-              <span>AI 正在分析会议内容...</span>
-            </div>
-            <div class="ai-body" id="aiBody"><p style="color:#CCCCCC">开始录制后可生成 AI 总结</p></div>
-            <div class="ai-footer">
-              <button class="btn-sec" onclick="copyAI()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="#232425" stroke-width="1.2"/><path d="M10 4V3a1 1 0 00-1-1H3a1 1 0 00-1 1v6a1 1 0 001 1h1" stroke="#232425" stroke-width="1.2"/></svg>复制</button>
-              <button class="btn-pri" id="aiGenBtn" onclick="regenerateAI()"><div class="spinner" id="aiSpinnerPri" style="display:none;border-top-color:white"></div><span id="aiGenLabel">生成总结</span></button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ════ SHEET: Sync Settings ════ -->
-        <div class="sheet-overlay" id="sheetSettings" onclick="if(event.target===this)closeSheet()">
-          <div class="bottom-sheet">
-            <div class="sheet-handle"><div class="handle-bar"></div></div>
-            <div class="sheet-section">
-              <div class="sheet-section-title">字体设置</div>
-              <div class="sheet-card">
-                <div class="sheet-row">
-                  <div class="sheet-row-left"><div>字体大小</div><div>调整转录文字显示大小</div></div>
-                  <div class="sheet-row-right">
-                    <div class="sz-ctrl">
-                      <div class="sz-btn" onclick="changeSize(-1)">−</div>
-                      <div class="sz-num" id="szNum">16</div>
-                      <div class="sz-btn" onclick="changeSize(1)">+</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="sheet-row">
-                  <div class="sheet-row-left"><div>显示原文</div><div>同时显示原文和译文</div></div>
-                  <div class="sheet-row-right">
-                    <div class="toggle" id="toggleOrig" onclick="this.classList.toggle('off')"><div class="toggle-dot"></div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="sheet-section">
-              <div class="sheet-section-title">AI 同传设置</div>
-              <div class="sheet-card">
-                <div class="sheet-row">
-                  <div class="sheet-row-left"><div>精修模式</div><div>AI 实时优化译文质量</div></div>
-                  <div class="sheet-row-right"><div class="toggle" onclick="this.classList.toggle('off')"><div class="toggle-dot"></div></div></div>
-                </div>
-                <div class="sheet-row">
-                  <div class="sheet-row-left"><div>语音灵敏度</div><div>识别触发的音量阈值</div></div>
-                  <div class="sheet-row-right">中等<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-                </div>
-                <div class="sheet-row">
-                  <div class="sheet-row-left"><div>翻译引擎</div><div>选择适合当前场景的引擎</div></div>
-                  <div class="sheet-row-right">AI 精准翻译<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-                </div>
-              </div>
-            </div>
-            <div class="sheet-cancel" onclick="closeSheet()">关闭</div>
-          </div>
-        </div>
-
-        <!-- ════ CONFIRM: Quit ════ -->
-        <div class="confirm-overlay" id="overlayQuit">
-          <div class="confirm-box">
-            <div class="confirm-title">确认退出同传</div>
-            <div class="confirm-body">正在录音中，退出后当前录音将会丢失。<br>是否保存后退出？</div>
-            <div class="confirm-actions">
-              <button class="confirm-cancel" onclick="closeQuitConfirm()">继续同传</button>
-              <button class="confirm-ok" onclick="confirmQuit()">退出不保存</button>
-            </div>
-          </div>
-        </div>
-
       </div><!-- /.panel -->
     </div><!-- /.main -->
   </div><!-- /.workspace -->
+
+  <!-- ════ OVERLAY: Mode Select ════ -->
+  <div class="overlay" id="overlayMode">
+    <div class="modal mode-modal">
+      <div class="mode-modal-header">
+        <div>
+          <div class="mode-modal-title">选择录制模式</div>
+          <div class="mode-modal-sub">开始后将实时转写 + AI 翻译</div>
+        </div>
+        <div class="mode-modal-close" onclick="closeModeSelect()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="mode-options">
+        <div class="mode-opt mo-primary" onclick="selectMode('realtime')">
+          <div class="mo-icon">
+            <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><path d="M19.9193 11.5834C19.9193 9.97252 18.6134 8.66669 17.0026 8.66669C15.3918 8.66669 14.0859 9.97252 14.0859 11.5834V17C14.0859 18.6109 15.3918 19.9167 17.0026 19.9167C18.6134 19.9167 19.9193 18.6109 19.9193 17V11.5834Z" stroke="#0052CC" stroke-width="1.4" stroke-linejoin="round"/><path d="M10.75 16.5833C10.75 20.0351 13.5482 22.8333 17 22.8333C20.4518 22.8333 23.25 20.0351 23.25 16.5833" stroke="#0052CC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 22.8333V25.3333" stroke="#0052CC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="mo-body">
+            <div class="mo-title">Live Meeting</div>
+            <div class="mo-desc">面对面会议 · 麦克风实时收音转写</div>
+          </div>
+          <svg class="mo-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="mode-opt mo-secondary" onclick="selectMode('video')">
+          <div class="mo-icon">
+            <svg width="32" height="32" viewBox="0 0 39 39" fill="none"><path d="M11.037 13.5755C11.037 13.1081 11.4159 12.7292 11.8833 12.7292H23.7323C24.1997 12.7292 24.5786 13.1081 24.5786 13.5755V17.3841L27.9641 14.845V24.5781L24.5786 22.039V25.4245C24.5786 25.8919 24.1997 26.2708 23.7323 26.2708H11.8833C11.4159 26.2708 11.037 25.8919 11.037 25.4245V13.5755Z" stroke="#B84A00" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5409 20.3464C17.7095 20.3464 18.6568 19.3991 18.6568 18.2305C18.6568 17.0619 17.7095 16.1146 16.5409 16.1146C15.3724 16.1146 14.425 17.0619 14.425 18.2305C14.425 19.3991 15.3724 20.3464 16.5409 20.3464Z" stroke="#B84A00" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="mo-body">
+            <div class="mo-title">Video / Screen</div>
+            <div class="mo-desc">在线课程 · 直播 · 播放视频时同传</div>
+          </div>
+          <svg class="mo-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="mode-cancel" onclick="closeModeSelect()">取消</div>
+    </div>
+  </div>
+
+  <!-- ════ OVERLAY: Settings ════ -->
+  <div class="overlay" id="overlaySettings" onclick="if(event.target===this)closeSettings()">
+    <div class="modal settings-modal">
+      <div onclick="closeSettings()" style="position:absolute;top:14px;right:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;color:#c0c4cc;z-index:10;transition:background .15s">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <div class="sm-header">
+        <div class="sm-langs">
+          <span class="sm-lang">英语（美国）</span>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="#909499" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="sm-lang">中文（简体）</span>
+        </div>
+        <div class="sm-sub" id="modeLabel">实时同传设置</div>
+      </div>
+      <div class="sm-row">
+        <div class="sm-row-left"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2" fill="#0F7FFF"/><circle cx="9" cy="9" r="6" stroke="#0F7FFF" stroke-width="1.5"/></svg>翻译引擎</div>
+        <div class="sm-row-right">AI 精准翻译<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="sm-row">
+        <div class="sm-row-left"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="4" y="2" width="10" height="13" rx="2" stroke="#606366" stroke-width="1.5"/></svg>声音来源</div>
+        <div class="sm-row-right" id="smSoundSrc">MacBook 麦克风<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="sm-row">
+        <div class="sm-row-left"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 5h14M2 9h10M2 13h6" stroke="#606366" stroke-width="1.5" stroke-linecap="round"/></svg>目标语言</div>
+        <div class="sm-row-right">中文（简体）<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="sm-footer">
+        <div class="remember">
+          <div class="toggle"><div class="toggle-dot"></div></div>
+          <span class="remember-label">记住以上设置</span>
+        </div>
+        <button class="start-btn" onclick="startRecording()">开始同传</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ OVERLAY: AI Summary ════ -->
+  <div class="overlay" id="overlayAI">
+    <div class="modal ai-modal">
+      <div class="ai-header">
+        <div class="ai-title-row">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l1 3.2L13 6l-3 1.2L9 10l-1-2.8L5 6l3-0.8L9 2z" fill="#f97316"/><path d="M14 11l.6 1.8 1.8.6-1.8.6-.6 1.8-.6-1.8-1.8-.6 1.8-.6.6-1.8z" fill="#fbbf24"/></svg>
+          <div class="ai-title">AI 智能总结</div>
+        </div>
+        <div class="close-x" onclick="closeAI()">✕</div>
+      </div>
+      <div class="ai-thinking" id="aiThinking" style="display:none">
+        <div class="spinner" id="aiSpinner"></div>
+        <span>AI 正在分析会议内容...</span>
+      </div>
+      <div class="ai-body" id="aiBody"><p style="color:#CCCCCC">开始录制后可生成 AI 总结</p></div>
+      <div class="ai-footer">
+        <button class="btn-sec" onclick="copyAI()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="#232425" stroke-width="1.2"/><path d="M10 4V3a1 1 0 00-1-1H3a1 1 0 00-1 1v6a1 1 0 001 1h1" stroke="#232425" stroke-width="1.2"/></svg>复制</button>
+        <button class="btn-pri" id="aiGenBtn" onclick="regenerateAI()"><div class="spinner" id="aiSpinnerPri" style="display:none;border-top-color:white"></div><span id="aiGenLabel">生成总结</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SHEET: Sync Settings ════ -->
+  <div class="sheet-overlay" id="sheetSettings" onclick="if(event.target===this)closeSheet()">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"><div class="handle-bar"></div></div>
+      <div class="sheet-section">
+        <div class="sheet-section-title">字体设置</div>
+        <div class="sheet-card">
+          <div class="sheet-row">
+            <div class="sheet-row-left"><div>字体大小</div><div>调整转录文字显示大小</div></div>
+            <div class="sheet-row-right"><div class="sz-ctrl"><div class="sz-btn" onclick="changeSize(-1)">−</div><div class="sz-num" id="szNum">16</div><div class="sz-btn" onclick="changeSize(1)">+</div></div></div>
+          </div>
+          <div class="sheet-row">
+            <div class="sheet-row-left"><div>显示原文</div><div>同时显示原文和译文</div></div>
+            <div class="sheet-row-right"><div class="toggle" id="toggleOrig" onclick="this.classList.toggle('off')"><div class="toggle-dot"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-section">
+        <div class="sheet-section-title">AI 同传设置</div>
+        <div class="sheet-card">
+          <div class="sheet-row">
+            <div class="sheet-row-left"><div>精修模式</div><div>AI 实时优化译文质量</div></div>
+            <div class="sheet-row-right"><div class="toggle" onclick="this.classList.toggle('off')"><div class="toggle-dot"></div></div></div>
+          </div>
+          <div class="sheet-row">
+            <div class="sheet-row-left"><div>语音灵敏度</div><div>识别触发的音量阈值</div></div>
+            <div class="sheet-row-right">中等<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+          </div>
+          <div class="sheet-row">
+            <div class="sheet-row-left"><div>翻译引擎</div><div>选择适合当前场景的引擎</div></div>
+            <div class="sheet-row-right">AI 精准翻译<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#CCCCCC" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-cancel" onclick="closeSheet()">关闭</div>
+    </div>
+  </div>
+
+  <!-- ════ CONFIRM: Quit ════ -->
+  <div class="confirm-overlay" id="overlayQuit">
+    <div class="confirm-box">
+      <div class="confirm-title">确认退出同传</div>
+      <div class="confirm-body">正在录音中，退出后当前录音将会丢失。<br>是否保存后退出？</div>
+      <div class="confirm-actions">
+        <button class="confirm-cancel" onclick="closeQuitConfirm()">继续同传</button>
+        <button class="confirm-ok" onclick="confirmQuit()">退出不保存</button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /.app -->
 
 <!-- Floating subtitle -->
