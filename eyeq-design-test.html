@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EyeQ — 设计审美测试</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+:root{
+  --ink:#0E0E0F;
+  --ink2:#4A4A55;
+  --ink3:#9292A0;
+  --bg:#F7F6F3;
+  --bg2:#FFFFFF;
+  --bg3:#F0EFEb;
+  --sep:#E8E7E3;
+  --accent:#5B4FE8;
+  --accent-light:#EEEcFC;
+  --accent2:#E8834F;
+  --accent2-light:#FDF0E8;
+  --green:#2DB87A;
+  --green-light:#E6F9F1;
+  --red:#E84F4F;
+  --red-light:#FDEAEA;
+  --gold:#F0B429;
+  --r:16px;
+  --r-sm:10px;
+  --r-pill:100px;
+}
+
+body{
+  font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+}
+
+/* ─── SCREENS ─── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ─── NAV ─── */
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 40px;
+  position:sticky;top:0;z-index:50;
+  background:rgba(247,246,243,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--sep);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.4px;
+}
+.nav-logo-icon{
+  width:32px;height:32px;background:var(--accent);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+}
+.nav-pill{
+  background:var(--accent-light);color:var(--accent);
+  font-size:12px;font-weight:700;padding:5px 12px;border-radius:var(--r-pill);
+}
+
+/* ─── HERO ─── */
+.hero{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 40px;text-align:center;gap:32px;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent-light);color:var(--accent);
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:6px 14px;border-radius:var(--r-pill);
+}
+.hero-title{
+  font-size:clamp(42px,6vw,76px);font-weight:800;
+  letter-spacing:-2px;line-height:1.05;
+  max-width:800px;
+}
+.hero-title span{color:var(--accent)}
+.hero-sub{
+  font-size:18px;color:var(--ink2);line-height:1.6;max-width:520px;
+}
+.hero-cta{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;
+}
+.btn-primary{
+  background:var(--accent);color:white;border:none;
+  padding:16px 32px;border-radius:var(--r-pill);
+  font-size:15px;font-weight:700;cursor:pointer;
+  box-shadow:0 8px 24px rgba(91,79,232,.35);
+  transition:transform .15s,box-shadow .15s;
+  display:flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(91,79,232,.45)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{
+  background:none;border:1.5px solid var(--sep);color:var(--ink2);
+  padding:16px 28px;border-radius:var(--r-pill);
+  font-size:15px;font-weight:600;cursor:pointer;
+  transition:border-color .15s,color .15s;
+}
+.btn-ghost:hover{border-color:var(--ink3);color:var(--ink)}
+
+/* Stats bar */
+.hero-stats{
+  display:flex;align-items:center;gap:32px;
+  padding:20px 32px;background:var(--bg2);
+  border-radius:var(--r);border:1px solid var(--sep);
+}
+.stat{text-align:center}
+.stat-num{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.5px}
+.stat-lbl{font-size:12px;color:var(--ink3);margin-top:2px}
+.stat-sep{width:1px;height:36px;background:var(--sep)}
+
+/* Dimension cards */
+.dims{
+  display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:700px;
+}
+.dim-card{
+  padding:12px 18px;background:var(--bg2);border:1px solid var(--sep);
+  border-radius:var(--r-sm);display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;color:var(--ink2);
+}
+.dim-dot{width:8px;height:8px;border-radius:50%}
+
+/* ─── QUIZ SCREEN ─── */
+.quiz-wrap{flex:1;display:flex;flex-direction:column;padding:32px 40px;gap:24px;max-width:960px;margin:0 auto;width:100%}
+
+/* Progress */
+.progress-bar-wrap{display:flex;flex-direction:column;gap:8px}
+.progress-meta{display:flex;justify-content:space-between;align-items:center}
+.progress-label{font-size:12px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+.progress-count{font-size:14px;font-weight:700;color:var(--accent)}
+.progress-track{height:6px;background:var(--sep);border-radius:var(--r-pill);overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:var(--r-pill);transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* Question card */
+.q-card{
+  background:var(--bg2);border:1px solid var(--sep);
+  border-radius:20px;padding:32px;
+}
+.q-type-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:var(--r-pill);margin-bottom:16px;
+}
+.q-title{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.3px;line-height:1.3;margin-bottom:8px}
+.q-sub{font-size:14px;color:var(--ink3);margin-bottom:28px}
+
+/* Compare options */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.compare-opt{
+  border:2px solid var(--sep);border-radius:var(--r);overflow:hidden;
+  cursor:pointer;transition:border-color .15s,transform .15s;
+  background:var(--bg2);
+}
+.compare-opt:hover{border-color:var(--accent);transform:translateY(-2px)}
+.compare-opt.selected{border-color:var(--accent);background:var(--accent-light)}
+.compare-opt.correct{border-color:var(--green);background:var(--green-light)}
+.compare-opt.wrong{border-color:var(--red);background:var(--red-light)}
+.compare-preview{
+  padding:24px;display:flex;flex-direction:column;gap:0;
+  border-bottom:1px solid var(--sep);
+}
+.compare-label{
+  padding:12px 16px;font-size:13px;font-weight:600;color:var(--ink2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.opt-letter{
+  width:22px;height:22px;border-radius:50%;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--ink3);
+}
+.compare-opt.selected .opt-letter{background:var(--accent);color:white}
+.compare-opt.correct .opt-letter{background:var(--green);color:white}
+.compare-opt.wrong .opt-letter{background:var(--red);color:white}
+
+/* Mock UI elements inside compare cards */
+.mock-ui{display:flex;flex-direction:column;gap:8px;width:100%}
+.mock-header{height:10px;background:var(--ink);border-radius:3px;width:60%}
+.mock-sub{height:7px;background:var(--sep);border-radius:3px}
+.mock-sub.w40{width:40%}
+.mock-sub.w70{width:70%}
+.mock-sub.w55{width:55%}
+.mock-btn{height:28px;border-radius:var(--r-pill);background:var(--accent);width:100px;margin-top:4px}
+.mock-btn.ghost{background:none;border:1.5px solid var(--sep)}
+.mock-card{background:var(--bg3);border-radius:var(--r-sm);padding:12px;display:flex;flex-direction:column;gap:6px}
+.mock-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-light);flex-shrink:0}
+.mock-row{display:flex;align-items:center;gap:8px}
+.mock-tag{height:20px;border-radius:var(--r-pill);background:var(--accent-light);width:60px}
+.mock-img{background:var(--bg3);border-radius:8px;height:60px;width:100%}
+.mock-title-lg{height:14px;background:var(--ink);border-radius:3px;width:80%}
+.mock-title-sm{height:9px;background:var(--sep);border-radius:3px}
+
+/* Choice options (single row) */
+.choice-list{display:flex;flex-direction:column;gap:10px}
+.choice-opt{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border:2px solid var(--sep);border-radius:var(--r);
+  cursor:pointer;transition:all .15s;background:var(--bg2);
+}
+.choice-opt:hover{border-color:var(--accent);background:var(--accent-light)}
+.choice-opt.selected{border-color:var(--accent);background:var(--accent-light)}
+.choice-opt.correct{border-color:var(--green);background:var(--green-light)}
+.choice-opt.wrong{border-color:var(--red);background:var(--red-light)}
+.choice-radio{
+  width:20px;height:20px;border-radius:50%;border:2px solid var(--sep);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;
+}
+.choice-opt.selected .choice-radio{border-color:var(--accent);background:var(--accent)}
+.choice-opt.correct .choice-radio{border-color:var(--green);background:var(--green)}
+.choice-opt.wrong .choice-radio{border-color:var(--red);background:var(--red)}
+.choice-radio::after{content:'';width:7px;height:7px;border-radius:50%;background:white;display:none}
+.choice-opt.selected .choice-radio::after,
+.choice-opt.correct .choice-radio::after,
+.choice-opt.wrong .choice-radio::after{display:block}
+.choice-text{font-size:14px;font-weight:500;color:var(--ink);flex:1}
+
+/* Color palette options */
+.palette-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.palette-opt{
+  border:2px solid var(--sep);border-radius:var(--r);overflow:hidden;
+  cursor:pointer;transition:border-color .15s,transform .15s;
+}
+.palette-opt:hover{border-color:var(--accent);transform:translateY(-2px)}
+.palette-opt.selected{border-color:var(--accent)}
+.palette-opt.correct{border-color:var(--green)}
+.palette-opt.wrong{border-color:var(--red)}
+.palette-swatches{display:flex;height:56px}
+.swatch{flex:1}
+.palette-label{padding:10px 14px;font-size:12px;font-weight:600;color:var(--ink2);display:flex;justify-content:space-between;align-items:center}
+
+/* Feedback */
+.feedback{
+  padding:16px 20px;border-radius:var(--r);
+  display:flex;align-items:flex-start;gap:12px;
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.feedback.correct{background:var(--green-light);border:1px solid #C3EDD8}
+.feedback.wrong{background:var(--red-light);border:1px solid #F5C6C6}
+.feedback-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.feedback-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.feedback.correct .feedback-title{color:#1A8A57}
+.feedback.wrong .feedback-title{color:#C0392B}
+.feedback-body{font-size:13px;line-height:1.55;color:var(--ink2)}
+
+/* Action bar */
+.q-actions{display:flex;justify-content:flex-end;margin-top:8px}
+.btn-next{
+  background:var(--accent);color:white;border:none;
+  padding:14px 28px;border-radius:var(--r-pill);
+  font-size:14px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  transition:transform .15s,opacity .15s;
+  opacity:0;pointer-events:none;
+}
+.btn-next.visible{opacity:1;pointer-events:all}
+.btn-next:hover{transform:translateY(-1px)}
+
+/* ─── RESULT SCREEN ─── */
+.result-wrap{flex:1;display:flex;flex-direction:column;align-items:center;padding:48px 40px;gap:32px;max-width:720px;margin:0 auto;width:100%}
+
+.score-card{
+  width:100%;background:var(--bg2);border:1px solid var(--sep);
+  border-radius:24px;padding:40px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.score-card::before{
+  content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(91,79,232,.12),transparent 70%);
+  pointer-events:none;
+}
+.score-label{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px}
+.score-num{font-size:80px;font-weight:800;letter-spacing:-3px;line-height:1;color:var(--accent);margin-bottom:8px}
+.score-total{font-size:18px;color:var(--ink3)}
+.score-title{font-size:24px;font-weight:800;color:var(--ink);margin:16px 0 8px;letter-spacing:-.3px}
+.score-desc{font-size:14px;color:var(--ink2);line-height:1.6;max-width:400px;margin:0 auto}
+
+/* Dimension breakdown */
+.dim-breakdown{width:100%;display:flex;flex-direction:column;gap:12px}
+.dim-row{
+  display:flex;align-items:center;gap:14px;
+  background:var(--bg2);border:1px solid var(--sep);
+  border-radius:var(--r);padding:16px 20px;
+}
+.dim-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dim-info{flex:1;min-width:0}
+.dim-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.dim-bar-track{height:6px;background:var(--sep);border-radius:var(--r-pill);overflow:hidden}
+.dim-bar-fill{height:100%;border-radius:var(--r-pill);transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dim-score{font-size:14px;font-weight:700;color:var(--ink);min-width:36px;text-align:right}
+
+/* Share card */
+.share-card{
+  width:100%;background:var(--accent);border-radius:20px;
+  padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.share-text{color:white}
+.share-title{font-size:18px;font-weight:800;margin-bottom:4px}
+.share-sub{font-size:13px;opacity:.75}
+.share-btns{display:flex;gap:10px;flex-shrink:0}
+.btn-share{
+  background:rgba(255,255,255,.2);color:white;border:1.5px solid rgba(255,255,255,.3);
+  padding:10px 18px;border-radius:var(--r-pill);
+  font-size:13px;font-weight:600;cursor:pointer;
+  transition:background .15s;white-space:nowrap;
+}
+.btn-share:hover{background:rgba(255,255,255,.3)}
+.btn-retry{
+  background:white;color:var(--accent);border:none;
+  padding:10px 18px;border-radius:var(--r-pill);
+  font-size:13px;font-weight:700;cursor:pointer;
+  transition:transform .15s;white-space:nowrap;
+}
+.btn-retry:hover{transform:scale(1.03)}
+</style>
+</head>
+<body>
+
+<!-- ════ SCREEN: HOME ════ -->
+<div class="screen active" id="screenHome">
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M9 2L11 7L16 9L11 11L9 16L7 11L2 9L7 7L9 2Z" fill="white" opacity=".9"/>
+        </svg>
+      </div>
+      EyeQ
+    </div>
+    <div class="nav-pill">Beta</div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-tag">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      5 道题 · 约 3 分钟
+    </div>
+
+    <h1 class="hero-title">
+      你的设计审美<br><span>真的过关了吗？</span>
+    </h1>
+
+    <p class="hero-sub">
+      通过真实设计案例，测试你对视觉层级、配色和谐、留白感知、排版节奏的直觉——看看你的眼睛有多敏锐。
+    </p>
+
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="startQuiz()">
+        开始测试
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-ghost" onclick="showAbout()">了解测试逻辑</button>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-lbl">测试维度</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-lbl">关卡题目</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <div class="stat-num">3min</div>
+        <div class="stat-lbl">完成时间</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <div class="stat-num">100</div>
+        <div class="stat-lbl">满分</div>
+      </div>
+    </div>
+
+    <div class="dims">
+      <div class="dim-card"><div class="dim-dot" style="background:#5B4FE8"></div>视觉层级</div>
+      <div class="dim-card"><div class="dim-dot" style="background:#E8834F"></div>配色和谐</div>
+      <div class="dim-card"><div class="dim-dot" style="background:#2DB87A"></div>留白感知</div>
+      <div class="dim-card"><div class="dim-dot" style="background:#F0B429"></div>排版节奏</div>
+      <div class="dim-card"><div class="dim-dot" style="background:#E84F4F"></div>对齐精度</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SCREEN: QUIZ ════ -->
+<div class="screen" id="screenQuiz">
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11 7L16 9L11 11L9 16L7 11L2 9L7 7L9 2Z" fill="white" opacity=".9"/></svg>
+      </div>
+      EyeQ
+    </div>
+    <button class="btn-ghost" style="padding:8px 16px;font-size:13px" onclick="quitQuiz()">退出</button>
+  </nav>
+
+  <div class="quiz-wrap">
+    <!-- Progress -->
+    <div class="progress-bar-wrap">
+      <div class="progress-meta">
+        <span class="progress-label" id="qTypeBadge">视觉层级</span>
+        <span class="progress-count" id="qCount">1 / 5</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:20%"></div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <div class="q-card" id="qCard"></div>
+
+    <!-- Feedback -->
+    <div id="feedbackArea"></div>
+
+    <!-- Actions -->
+    <div class="q-actions">
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">
+        下一题
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SCREEN: RESULT ════ -->
+<div class="screen" id="screenResult">
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11 7L16 9L11 11L9 16L7 11L2 9L7 7L9 2Z" fill="white" opacity=".9"/></svg>
+      </div>
+      EyeQ
+    </div>
+    <div class="nav-pill">测试结果</div>
+  </nav>
+
+  <div class="result-wrap">
+    <div class="score-card" id="scoreCard"></div>
+    <div class="dim-breakdown" id="dimBreakdown"></div>
+    <div class="share-card">
+      <div class="share-text">
+        <div class="share-title">分享给设计师朋友</div>
+        <div class="share-sub">看看他们的眼睛够不够敏锐</div>
+      </div>
+      <div class="share-btns">
+        <button class="btn-share" onclick="copyLink()">复制链接</button>
+        <button class="btn-retry" onclick="retryQuiz()">再测一次</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════ QUIZ DATA ════
+const questions = [
+  {
+    id: 1,
+    dimension: '视觉层级',
+    dimColor: '#5B4FE8',
+    dimBg: '#EEEcFC',
+    type: 'compare',
+    badge: '👁 选出更好的设计',
+    badgeBg: '#EEEcFC',
+    badgeColor: '#5B4FE8',
+    title: '哪个卡片设计的视觉层级更清晰？',
+    sub: '观察标题、正文、操作按钮之间的大小对比关系',
+    correct: 'A',
+    options: [
+      {
+        id: 'A',
+        label: '设计 A',
+        ui: `<div class="mock-ui">
+          <div class="mock-title-lg" style="width:75%"></div>
+          <div style="height:6px"></div>
+          <div class="mock-title-sm" style="width:90%"></div>
+          <div class="mock-title-sm" style="width:65%;margin-top:3px"></div>
+          <div style="height:12px"></div>
+          <div style="display:flex;gap:8px"><div class="mock-btn"></div><div class="mock-btn ghost"></div></div>
+        </div>`
+      },
+      {
+        id: 'B',
+        label: '设计 B',
+        ui: `<div class="mock-ui">
+          <div class="mock-title-sm" style="width:75%;height:11px;background:#606366"></div>
+          <div style="height:6px"></div>
+          <div class="mock-title-sm" style="width:90%;height:9px"></div>
+          <div class="mock-title-sm" style="width:65%;margin-top:3px;height:9px"></div>
+          <div style="height:12px"></div>
+          <div style="display:flex;gap:8px"><div class="mock-btn" style="background:#888"></div><div class="mock-btn ghost"></div></div>
+        </div>`
+      }
+    ],
+    feedback: {
+      correct: '✅ 正确！设计 A 用字号差异（大标题 vs 小正文）建立了清晰的主次关系，按钮也有明确的主次区分。设计 B 所有元素视觉重量接近，层级模糊。',
+      wrong: '❌ 答案是设计 A。设计 A 的标题与正文字号对比明显，主按钮颜色突出——这正是视觉层级的核心：重要的东西要显眼。'
+    }
+  },
+  {
+    id: 2,
+    dimension: '配色和谐',
+    dimColor: '#E8834F',
+    dimBg: '#FDF0E8',
+    type: 'palette',
+    badge: '🎨 找出和谐配色',
+    badgeBg: '#FDF0E8',
+    badgeColor: '#E8834F',
+    title: '哪组配色方案最和谐？',
+    sub: '和谐的配色往往有统一的色调倾向或明确的对比逻辑',
+    correct: 'C',
+    palettes: [
+      {
+        id: 'A',
+        label: 'A',
+        swatches: ['#FF0000','#00FF00','#0000FF','#FFFF00']
+      },
+      {
+        id: 'B',
+        label: 'B',
+        swatches: ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4']
+      },
+      {
+        id: 'C',
+        label: 'C',
+        swatches: ['#2C3E50','#3498DB','#85C1E9','#EBF5FB']
+      },
+      {
+        id: 'D',
+        label: 'D',
+        swatches: ['#FF4500','#32CD32','#9400D3','#FFD700']
+      }
+    ],
+    feedback: {
+      correct: '✅ 正确！C 组是同色系渐变——深蓝到浅蓝，明度递进，自然和谐。A 和 D 是高饱和度撞色，B 虽然是类似色但饱和度参差，整体感弱。',
+      wrong: '❌ 最和谐的是 C。它采用同一色相（蓝色）的明度梯度，从深到浅形成自然过渡——这是配色入门最稳的策略。A/D 的高饱和撞色需要极强的驾驭能力。'
+    }
+  },
+  {
+    id: 3,
+    dimension: '留白感知',
+    dimColor: '#2DB87A',
+    dimBg: '#E6F9F1',
+    type: 'choice',
+    badge: '⬜ 判断留白',
+    badgeBg: '#E6F9F1',
+    badgeColor: '#2DB87A',
+    title: '一个高端品牌的产品页面，正文内容填满了整个屏幕宽度。作为设计师，你的第一反应是？',
+    sub: '从专业视角判断这个设计决策是否合理',
+    correct: 'B',
+    choices: [
+      { id: 'A', text: '这样信息密度高，用户能看到更多内容，体验更好' },
+      { id: 'B', text: '内容区应该控制最大宽度（如 1200px），两侧留白，避免阅读时眼球移动过大' },
+      { id: 'C', text: '高端品牌应该让文字铺满，体现内容厚重感' },
+      { id: 'D', text: '留白多少主要看屏幕尺寸，没有固定标准' }
+    ],
+    feedback: {
+      correct: '✅ 正确！超宽文字行（line length > 75字符）会让读者阅读疲劳，找不到下一行起点。高端品牌网站普遍用 max-width 限制内容区宽度，两侧大量留白反而是品质感的来源。',
+      wrong: '❌ 答案是 B。舒适阅读的文字行宽约 50-75 个字符。超宽布局会让视线来回跳跃。Apple、Stripe 等高端品牌都用大量留白——空间即奢华。'
+    }
+  },
+  {
+    id: 4,
+    dimension: '排版节奏',
+    dimColor: '#F0B429',
+    dimBg: '#FEF9E7',
+    type: 'compare',
+    badge: '📐 选出更好的设计',
+    badgeBg: '#FEF9E7',
+    badgeColor: '#C8960C',
+    title: '哪个列表的排版节奏更舒适？',
+    sub: '注意每个条目之间的间距和视觉呼吸感',
+    correct: 'B',
+    options: [
+      {
+        id: 'A',
+        label: '设计 A — 紧凑',
+        ui: `<div class="mock-ui" style="gap:0">
+          ${[1,2,3,4].map(i => `<div style="padding:4px 0;border-bottom:1px solid #EAEAEA;display:flex;align-items:center;gap:8px">
+            <div style="width:6px;height:6px;border-radius:50%;background:#5B4FE8;flex-shrink:0"></div>
+            <div style="height:8px;background:#232425;border-radius:2px;width:${60+i*8}%"></div>
+          </div>`).join('')}
+        </div>`
+      },
+      {
+        id: 'B',
+        label: '设计 B — 舒适',
+        ui: `<div class="mock-ui" style="gap:0">
+          ${[1,2,3].map(i => `<div style="padding:10px 0;border-bottom:1px solid #EAEAEA;display:flex;align-items:center;gap:10px">
+            <div style="width:8px;height:8px;border-radius:50%;background:#5B4FE8;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+              <div style="height:9px;background:#232425;border-radius:2px;width:${55+i*10}%"></div>
+              <div style="height:7px;background:#E2E2E2;border-radius:2px;width:${40+i*8}%"></div>
+            </div>
+          </div>`).join('')}
+        </div>`
+      }
+    ],
+    feedback: {
+      correct: '✅ 正确！设计 B 的行间距更大，每个条目内还有标题+副标题的内部层级，整体节奏从容有序。设计 A 内容挤在一起，视觉上容易"粘连"，阅读时难以区分条目边界。',
+      wrong: '❌ 答案是 B。充足的行间距让内容"呼吸"，B 还引入了主标题+副标题的双行结构，增加信息密度同时保持了清晰度。A 的密集排列适合某些场景，但通常体验更差。'
+    }
+  },
+  {
+    id: 5,
+    dimension: '对齐精度',
+    dimColor: '#E84F4F',
+    dimBg: '#FDEAEA',
+    type: 'choice',
+    badge: '📏 对齐判断',
+    badgeBg: '#FDEAEA',
+    badgeColor: '#C0392B',
+    title: '以下哪个关于对齐原则的说法是正确的？',
+    sub: '这是设计师最容易忽略的细节之一',
+    correct: 'C',
+    choices: [
+      { id: 'A', text: '元素只要视觉上看起来对齐就够了，不需要精确测量' },
+      { id: 'B', text: '居中对齐是最安全的选择，任何情况下都应该优先使用' },
+      { id: 'C', text: '文字应该优先用左对齐，因为西文/中文的自然阅读方向是从左到右' },
+      { id: 'D', text: '图标和文字对齐时，以图标的外边框为基准就行' }
+    ],
+    feedback: {
+      correct: '✅ 正确！左对齐符合视觉和阅读习惯，形成清晰的"左侧锚点"，让眼睛知道每行从哪开始。居中对齐适合标题、CTA等短文本，但长段落居中会让阅读轴不稳定，产生疲劳感。',
+      wrong: '❌ 答案是 C。左对齐是正文最稳定的对齐方式。图标与文字对齐应该以视觉中心为准（不是外边框），因为图标的视觉重心往往偏向内部。A 选项错误——1px 的错位人眼能感知。'
+    }
+  }
+];
+
+// ════ STATE ════
+let currentQ = 0;
+let answers = [];
+let answered = false;
+
+// ════ SCORE CONFIG ════
+const dimensions = [
+  {name:'视觉层级', color:'#5B4FE8', icon:'👁'},
+  {name:'配色和谐', color:'#E8834F', icon:'🎨'},
+  {name:'留白感知', color:'#2DB87A', icon:'⬜'},
+  {name:'排版节奏', color:'#F0B429', icon:'📐'},
+  {name:'对齐精度', color:'#E84F4F', icon:'📏'},
+];
+
+// ════ NAVIGATION ════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startQuiz() {
+  currentQ = 0;
+  answers = [];
+  answered = false;
+  showScreen('screenQuiz');
+  renderQuestion();
+}
+
+function quitQuiz() {
+  if(confirm('确定要退出测试吗？进度不会保存。')) showScreen('screenHome');
+}
+
+function showAbout() {
+  alert('EyeQ 通过 5 道精心设计的题目，从视觉层级、配色和谐、留白感知、排版节奏、对齐精度五个维度评估你的设计审美直觉。每道题都有专业解析，帮助你理解背后的设计原理。');
+}
+
+// ════ RENDER ════
+function renderQuestion() {
+  const q = questions[currentQ];
+  answered = false;
+
+  // Progress
+  document.getElementById('qCount').textContent = `${currentQ+1} / ${questions.length}`;
+  document.getElementById('qTypeBadge').textContent = q.dimension;
+  document.getElementById('progressFill').style.width = `${(currentQ+1)/questions.length*100}%`;
+
+  // Clear feedback
+  document.getElementById('feedbackArea').innerHTML = '';
+  document.getElementById('btnNext').classList.remove('visible');
+
+  // Render card
+  const card = document.getElementById('qCard');
+
+  if(q.type === 'compare') {
+    card.innerHTML = `
+      <div class="q-type-badge" style="background:${q.badgeBg};color:${q.badgeColor}">${q.badge}</div>
+      <div class="q-title">${q.title}</div>
+      <div class="q-sub">${q.sub}</div>
+      <div class="compare-grid">
+        ${q.options.map(opt => `
+          <div class="compare-opt" id="opt-${opt.id}" onclick="selectCompare('${opt.id}')">
+            <div class="compare-preview">${opt.ui}</div>
+            <div class="compare-label">
+              <span style="font-size:14px;font-weight:600;color:var(--ink)">${opt.label}</span>
+              <div class="opt-letter">${opt.id}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else if(q.type === 'palette') {
+    card.innerHTML = `
+      <div class="q-type-badge" style="background:${q.badgeBg};color:${q.badgeColor}">${q.badge}</div>
+      <div class="q-title">${q.title}</div>
+      <div class="q-sub">${q.sub}</div>
+      <div class="palette-grid">
+        ${q.palettes.map(p => `
+          <div class="palette-opt" id="opt-${p.id}" onclick="selectPalette('${p.id}')">
+            <div class="palette-swatches">
+              ${p.swatches.map(c => `<div class="swatch" style="background:${c}"></div>`).join('')}
+            </div>
+            <div class="palette-label">
+              <span>配色 ${p.label}</span>
+              <div class="opt-letter">${p.id}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else if(q.type === 'choice') {
+    card.innerHTML = `
+      <div class="q-type-badge" style="background:${q.badgeBg};color:${q.badgeColor}">${q.badge}</div>
+      <div class="q-title">${q.title}</div>
+      <div class="q-sub">${q.sub}</div>
+      <div class="choice-list">
+        ${q.choices.map(c => `
+          <div class="choice-opt" id="opt-${c.id}" onclick="selectChoice('${c.id}')">
+            <div class="choice-radio"></div>
+            <div class="choice-text">${c.text}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+}
+
+// ════ ANSWER LOGIC ════
+function handleAnswer(selected) {
+  if(answered) return;
+  answered = true;
+  const q = questions[currentQ];
+  const correct = selected === q.correct;
+  answers.push({qId: q.id, selected, correct, dimension: q.dimension});
+
+  // Show feedback
+  const fb = document.getElementById('feedbackArea');
+  fb.innerHTML = `
+    <div class="feedback ${correct ? 'correct' : 'wrong'}">
+      <div class="feedback-icon">${correct ? '✅' : '❌'}</div>
+      <div>
+        <div class="feedback-title">${correct ? '回答正确！' : '这次没对'}</div>
+        <div class="feedback-body">${correct ? q.feedback.correct : q.feedback.wrong}</div>
+      </div>
+    </div>
+  `;
+
+  // Show next button (or finish)
+  const btn = document.getElementById('btnNext');
+  btn.textContent = currentQ < questions.length - 1 ? '下一题 →' : '查看结果 →';
+  btn.innerHTML = currentQ < questions.length - 1
+    ? `下一题 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+    : `查看结果 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2l4 5-4 5M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  btn.classList.add('visible');
+}
+
+function selectCompare(id) {
+  if(answered) return;
+  const q = questions[currentQ];
+  // Highlight selected
+  q.options.forEach(opt => {
+    const el = document.getElementById(`opt-${opt.id}`);
+    if(opt.id === id) el.classList.add('selected');
+  });
+  // Show result after brief delay
+  setTimeout(() => {
+    q.options.forEach(opt => {
+      const el = document.getElementById(`opt-${opt.id}`);
+      el.classList.remove('selected');
+      if(opt.id === q.correct) el.classList.add('correct');
+      else if(opt.id === id && id !== q.correct) el.classList.add('wrong');
+    });
+    handleAnswer(id);
+  }, 300);
+}
+
+function selectPalette(id) {
+  if(answered) return;
+  const q = questions[currentQ];
+  document.getElementById(`opt-${id}`).classList.add('selected');
+  setTimeout(() => {
+    q.palettes.forEach(p => {
+      const el = document.getElementById(`opt-${p.id}`);
+      el.classList.remove('selected');
+      if(p.id === q.correct) el.classList.add('correct');
+      else if(p.id === id && id !== q.correct) el.classList.add('wrong');
+    });
+    handleAnswer(id);
+  }, 300);
+}
+
+function selectChoice(id) {
+  if(answered) return;
+  const q = questions[currentQ];
+  document.getElementById(`opt-${id}`).classList.add('selected');
+  setTimeout(() => {
+    q.choices.forEach(c => {
+      const el = document.getElementById(`opt-${c.id}`);
+      el.classList.remove('selected');
+      if(c.id === q.correct) el.classList.add('correct');
+      else if(c.id === id && id !== q.correct) el.classList.add('wrong');
+    });
+    handleAnswer(id);
+  }, 300);
+}
+
+function nextQuestion() {
+  currentQ++;
+  if(currentQ >= questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+// ════ RESULT ════
+function showResult() {
+  showScreen('screenResult');
+  const score = answers.filter(a => a.correct).length;
+  const total = questions.length;
+  const pct = Math.round(score / total * 100);
+
+  const titles = [
+    {min:0, max:39, title:'审美初学者', desc:'你对设计原则的理解还在起步阶段，多看多练是最好的提升方式。从学习视觉层级基础开始吧！'},
+    {min:40, max:59, title:'有些感觉了', desc:'你有一定的设计直觉，但对一些核心原则还不够熟悉。继续深入学习设计规范，你会进步很快。'},
+    {min:60, max:79, title:'审美不错！', desc:'你对大部分设计原则有清晰的认知，能识别好设计与坏设计的本质差异。继续精进！'},
+    {min:80, max:99, title:'设计感很强', desc:'你具备专业设计师的审美直觉，对视觉细节非常敏感。这种眼力在实际项目中很有价值。'},
+    {min:100, max:100, title:'审美满分！🎉', desc:'完美！你对每一道题的判断都精准，具备出色的设计鉴赏力。你的眼睛就是你最好的工具。'},
+  ];
+  const titleObj = titles.find(t => pct >= t.min && pct <= t.max) || titles[0];
+
+  // Score card
+  document.getElementById('scoreCard').innerHTML = `
+    <div class="score-label">你的审美得分</div>
+    <div class="score-num">${pct}</div>
+    <div class="score-total">/ 100 分</div>
+    <div class="score-title">${titleObj.title}</div>
+    <div class="score-desc">${titleObj.desc}</div>
+  `;
+
+  // Dimension breakdown
+  const breakdown = document.getElementById('dimBreakdown');
+  breakdown.innerHTML = `<div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px">各维度表现</div>`;
+  dimensions.forEach((dim, i) => {
+    const ans = answers[i];
+    const got = ans && ans.correct ? 100 : 0;
+    breakdown.innerHTML += `
+      <div class="dim-row">
+        <div class="dim-icon" style="background:${dim.color}22">${dim.icon}</div>
+        <div class="dim-info">
+          <div class="dim-name">${dim.name}</div>
+          <div class="dim-bar-track">
+            <div class="dim-bar-fill" style="width:0%;background:${dim.color}" data-w="${got}"></div>
+          </div>
+        </div>
+        <div class="dim-score" style="color:${dim.color}">${got === 100 ? '✓' : '✗'}</div>
+      </div>
+    `;
+  });
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.dim-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.w + '%';
+    });
+  }, 300);
+}
+
+function retryQuiz() { startQuiz(); }
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    alert('链接已复制！');
+  }).catch(() => {
+    alert('链接：' + window.location.href);
+  });
+}
+</script>
+</body>
+</html>
